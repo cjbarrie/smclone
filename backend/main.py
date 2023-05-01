@@ -1,17 +1,30 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify, request
+import sqlite3
+from flask_cors import CORS
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///twitter_clone.db"
-db = SQLAlchemy(app)
-
-# Add your database models here
+CORS(app)
 
 @app.route("/")
-def hello():
-    return "Hello, this is the Twitter clone backend!"
+def index():
+    return "Hello, World!"
 
-# Add your API routes here
+@app.route("/users", methods=["POST"])
+def create_user():
+    name = request.json.get("name")
+    email = request.json.get("email")
+
+    if not name or not email:
+        return jsonify({"error": "Both name and email are required"}), 400
+
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO users (name, email) VALUES (?, ?)", (name, email))
+    user_id = c.lastrowid
+    conn.commit()
+    conn.close()
+
+    return jsonify({"id": user_id, "name": name, "email": email}), 201
 
 if __name__ == "__main__":
     app.run(debug=True)

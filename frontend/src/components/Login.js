@@ -7,11 +7,22 @@ const Login = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
+    console.log("handleSubmit called"); // Add this line to confirm the function is being called
+    
     e.preventDefault();
-
-    // Call the backend API for authentication here
-
-    setSubmitted(true);
+  
+    fetch("http://localhost:5001/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        localStorage.setItem("user", JSON.stringify(data));
+        setSubmitted(true);
+        console.log("Submitted state set to true"); // Add this line to confirm the state update
+      })
+      .catch((error) => console.error("Error logging in:", error));
   };
 
   return submitted ? (

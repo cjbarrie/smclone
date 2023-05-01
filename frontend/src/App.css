@@ -1,38 +1,105 @@
-.App {
+/* General styles */
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f5f8fa;
+  margin: 0;
+}
+
+/* Login form styles */
+.login-form {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.login-form h1 {
+  margin-top: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: #1da1f2;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.login-form input[type="text"],
+.login-form input[type="email"],
+.login-form button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 18px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.login-form input[type="text"]:focus,
+.login-form input[type="email"]:focus,
+.login-form button[type="submit"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1da1f2;
+}
+
+.login-form button[type="submit"] {
+  background-color: #1da1f2;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-form button[type="submit"]:hover {
+  background-color: #0c8af6;
+}
+
+/* Timeline styles */
+.timeline {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.timeline h1 {
+  margin-top: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: #1da1f2;
+}
+
+.tweet {
+  border-top: 1px solid #e6ecf0;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.tweet:first-child {
+  border-top: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.tweet-content {
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.tweet-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.tweet-actions button {
+  border: none;
+  background-color: transparent;
+  color: #1da1f2;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tweet-actions button:hover {
+  text-decoration: underline;
 }

@@ -1,0 +1,60 @@
+.Tweet {
+    display: flex;
+    padding: 12px;
+    border-bottom: 1px solid #e6ecf0;
+  }
+
+  .Timeline {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  
+  .Tweet-avatar {
+    width: 48px;
+    height: 48px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  
+  .Tweet-content {
+    flex: 1;
+  }
+  
+  .Tweet-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  
+  .Tweet-name {
+    font-weight: bold;
+    margin-right: 6px;
+  }
+  
+  .Tweet-username {
+    color: #657786;
+  }
+  
+  .Tweet-text {
+    margin-bottom: 6px;
+    white-space: pre-wrap;
+  }
+  
+  .Tweet-stats {
+    display: flex;
+    align-items: center;
+    color: #657786;
+  }
+  
+  .Tweet-stat {
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+    font-size: 14px;
+  }
+  
+  .Tweet-stat svg {
+    margin-right: 6px;
+  }
+  

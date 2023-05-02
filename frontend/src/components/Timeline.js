@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/Timeline.css";
+import posthog from "posthog-js";
 
 const Timeline = () => {
   const [tweets, setTweets] = useState([]);
@@ -15,7 +16,10 @@ const Timeline = () => {
         console.error("Error fetching tweets:", error);
       });
   }, []);
-
+  function handleButtonClick() {
+    posthog.capture("button_click", { button_text: "Example Button" });
+    // Your button click logic here
+  }
   return (
     <div className="Timeline">
       {tweets.map((tweet) => (
@@ -64,6 +68,7 @@ const Timeline = () => {
           </div>
         </div>
       ))}
+       <button onClick={handleButtonClick}>Example Button</button>
     </div>
   );
 };

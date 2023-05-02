@@ -1,64 +1,70 @@
-.Tweet {
-    display: flex;
-    padding: 12px;
-    border-bottom: 1px solid #e6ecf0;
-  }
+.Timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #f5f8fa;
+  padding: 2rem 0;
+}
 
-  .Timeline {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  
-  .Tweet-avatar {
-    width: 48px;
-    height: 48px;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-  
-  .Tweet-content {
-    flex: 1;
-  }
-  
-  .Tweet-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  
-  .Tweet-name {
-    font-weight: bold;
-    margin-right: 6px;
-  }
-  
-  .Tweet-username {
-    color: #657786;
-  }
-  
-  .Tweet-text {
-    margin-bottom: 6px;
-    white-space: pre-wrap;
-  }
-  
-  .Tweet-stats {
-    display: flex;
-    align-items: center;
-    color: #657786;
-  }
-  
-  .Tweet-stat {
-    display: flex;
-    align-items: center;
-    margin-right: 24px;
-    font-size: 14px;
-  }
-  
-  .Tweet-stat svg {
-    margin-right: 6px;
-  }
-  
-  .Tweet-stat {
-    cursor: pointer;
-  }
-  
+.Tweet {
+  display: flex;
+  background-color: #ffffff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.Tweet-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.Tweet-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.Tweet-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.Tweet-name,
+.Tweet-username {
+  font-weight: bold;
+}
+
+.Tweet-username {
+  color: #657786;
+}
+
+.Tweet-timestamp {
+  color: #657786;
+}
+
+.Tweet-text {
+  margin-bottom: 1rem;
+}
+
+.Tweet-stats {
+  display: flex;
+}
+
+.Tweet-stat {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.Tweet-stat:hover {
+  color: #1da1f2;
+}

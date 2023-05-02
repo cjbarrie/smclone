@@ -20,6 +20,14 @@ const Timeline = () => {
     posthog.capture("button_click", { button_text: "Example Button" });
     // Your button click logic here
   }
+  const handleLikeClick = (tweetId) => {
+    posthog.capture('like_click', { tweet_id: tweetId });
+    // Your like button click logic here
+  };
+  const handleRetweetClick = (tweetId) => {
+    posthog.capture('retweet_click', { tweet_id: tweetId });
+    // Your retweet button click logic here
+  };
   return (
     <div className="Timeline">
       {tweets.map((tweet) => (
@@ -33,7 +41,7 @@ const Timeline = () => {
             </div>
             <div className="Tweet-text">{tweet.tweet}</div>
             <div className="Tweet-stats">
-              <div className="Tweet-stat">
+              <div className="Tweet-stat" onClick={() => handleRetweetClick(tweet.id)}>
                 <svg
                   viewBox="0 0 24 24"
                   width="16"
@@ -48,7 +56,7 @@ const Timeline = () => {
                 </svg>
                 {tweet.retweets_count}
               </div>
-              <div className="Tweet-stat">
+              <div className="Tweet-stat" onClick={() => handleLikeClick(tweet.id)}>
                 <svg
                   viewBox="0 0 24 24"
                   width="16"

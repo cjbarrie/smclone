@@ -2,9 +2,6 @@
 
 Repository for React social media clone environment
 
-![](clone.png)
-![](clonetimeline.png)
-
 To run backend:
 
 ```
@@ -21,3 +18,6 @@ cd smclone/frontend
 workon smclone
 npm start
 ```
+
+![](clone.png)
+![](clonetimeline.png)

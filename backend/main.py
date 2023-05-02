@@ -34,7 +34,24 @@ def create_user():
 
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
+    tweets = []
+    with open('tweets.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader, None)  # skip the header row
+        for tweet in reader:
+            tweets.append({
+                "id": tweet[1],
+                "user_id": tweet[2],
+                "username": tweet[6],
+                "name": tweet[7],
+                "tweet": tweet[3],
+                "retweets_count": int(tweet[4]),  # Convert retweets count to integer
+                "likes_count": int(tweet[5]),     # Convert likes count to integer
+                "profile_image_url": tweet[8]
+            })
+
     return jsonify(tweets)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

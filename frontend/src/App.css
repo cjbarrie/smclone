@@ -1,12 +1,12 @@
 /* General styles */
-body {
+/* body {
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #f5f8fa;
   margin: 0;
-}
+} */
 
 /* Login form styles */
-.login-form {
+/* .login-form {
   max-width: 450px;
   margin: 0 auto;
   padding: 20px;
@@ -51,10 +51,10 @@ body {
 
 .login-form button[type="submit"]:hover {
   background-color: #0c8af6;
-}
+} */
 
 /* Timeline styles */
-.timeline {
+/* .timeline {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
@@ -68,9 +68,9 @@ body {
   font-size: 36px;
   font-weight: bold;
   color: #1da1f2;
-}
+} */
 
-.tweet {
+/* .tweet {
   border-top: 1px solid #e6ecf0;
   padding: 20px 0;
   display: flex;
@@ -104,4 +104,4 @@ body {
   text-decoration: underline;
 }
 
-
+ */

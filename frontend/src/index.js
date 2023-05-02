@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import posthog from "posthog-js"; // Import PostHog at the top of the file
+
+// Initialize PostHog
+posthog.init('phc_AQiIC3C0J3GWgWHkXOzsXLGzjlfXTDOyZVZ0SQYPwAa', { api_host: 'https://eu.posthog.com' });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -29,7 +29,7 @@ const Login = () => {
     <Navigate to="/timeline" />
   ) : (
     <div className="login-form">
-      <h1>Twitter Clone</h1>
+      <h1>Politics Social</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

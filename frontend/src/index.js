@@ -6,8 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import posthog from "posthog-js"; // Import PostHog at the top of the file
 
 // Initialize PostHog
-posthog.init('phc_AQiIC3C0J3GWgWHkXOzsXLGzjlfXTDOyZVZ0SQYPwAa', { api_host: 'https://eu.posthog.com' });
-
+posthog.init('phc_Cm9KukWEFpQd8ErJIRajlg6Qd1rWx1dzK86XYBEDfou', { api_host: 'https://app.posthog.com' })
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

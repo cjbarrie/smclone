@@ -18,7 +18,6 @@ To run frontend:
 
 ```
 cd smclone/frontend
-workon smclone
 npm start
 ```
 

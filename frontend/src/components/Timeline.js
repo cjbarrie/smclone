@@ -7,6 +7,7 @@ const Timeline = () => {
   const [tweets, setTweets] = useState([]);
   const [likedTweets, setLikedTweets] = useState(new Set());
   const [retweetedTweets, setRetweetedTweets] = useState(new Set());
+  const [expandedTweets, setExpandedTweets] = useState(new Set());
 
   useEffect(() => {
     axios
@@ -19,6 +20,8 @@ const Timeline = () => {
       });
   }, []);
 
+  const tweetCutOffLength = 30
+  
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
     toggleLike(tweetId);
@@ -61,6 +64,19 @@ const Timeline = () => {
   const handleButtonClick = () => {
     posthog.capture('button_click', { button_text: 'Example Button' });
   };
+
+  const toggleExpandTweet = (tweetId) => {
+    setExpandedTweets((prevExpandedTweets) => {
+      const newExpandedTweets = new Set(prevExpandedTweets);
+      if (newExpandedTweets.has(tweetId)) {
+        newExpandedTweets.delete(tweetId);
+      } else {
+        newExpandedTweets.add(tweetId);
+      }
+      return newExpandedTweets;
+    });
+  };
+  
 return (
   <div className="Timeline">
     {tweets.map((tweet) => (
@@ -72,7 +88,13 @@ return (
             <span className="Tweet-username">@{tweet.username}</span>
             <span className="Tweet-timestamp">{tweet.timestamp}</span>
           </div>
-          <div className="Tweet-text">{tweet.tweet}</div>
+         <div className="Tweet-text">
+            <span className="Tweet-text">{tweet.tweet.length <= 30 ? tweet.tweet :
+              expandedTweets.has(tweet.id) ? `${tweet.tweet} ` : `${tweet.tweet.slice(0, 29)}... `}</span>
+            <span className="Tweet-expand">
+              {tweet.tweet.length <= 30 ? null : <button className="Expand-button" onClick={(event) => toggleExpandTweet(tweet.id, event)}>{expandedTweets.has(tweet.id) ? "read less" : "read more"}</button>}
+            </span>
+          </div>
           <div className="Tweet-stats">
             <div className="Tweet-stat" onClick={(event) => handleRetweetClick(tweet.id, event)}>
               <svg

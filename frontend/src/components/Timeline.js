@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "../styles/Timeline.css";
 import posthog from "posthog-js";
 
 const Timeline = () => {
+  // retrieve user id passed through from login page
+  const location = useLocation();
+  const userId = location.state?.userId;
+
   const [tweets, setTweets] = useState([]);
   const [likedTweets, setLikedTweets] = useState(new Set());
   const [retweetedTweets, setRetweetedTweets] = useState(new Set());
@@ -25,13 +30,21 @@ const Timeline = () => {
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
     toggleLike(tweetId);
-    handleInteraction('like_click', tweetId);
+    handleInteraction('like_click', tweetId, userId);
   };
 
   const handleRetweetClick = (tweetId, event) => {
     event.stopPropagation();
     toggleRetweet(tweetId);
-    handleInteraction('retweet_click', tweetId);
+    handleInteraction('retweet_click', tweetId, userId);
+  };
+
+  const handleExpandClick = (tweetId, event) => {
+    event.stopPropagation();
+    if(!expandedTweets.has(tweetId)) {
+      handleInteraction('expand_tweet', tweetId, userId);
+    }
+    toggleExpandTweet(tweetId);
   };
 
   const toggleLike = (tweetId) => {
@@ -58,11 +71,9 @@ const Timeline = () => {
     });
   };
 
-  const handleInteraction = (interaction, tweetId) => {
-    posthog.capture(interaction, { tweet_id: tweetId });
-  };
-  const handleButtonClick = () => {
-    posthog.capture('button_click', { button_text: 'Example Button' });
+  const handleInteraction = (interaction, tweetId, userId) => {
+    posthog.capture(interaction, { tweet_id: tweetId, user_id: userId });
+    console.log(`sent ${interaction} data to posthog for user ${userId}`)
   };
 
   const toggleExpandTweet = (tweetId) => {
@@ -92,7 +103,7 @@ return (
             <span className="Tweet-text">{tweet.tweet.length <= 30 ? tweet.tweet :
               expandedTweets.has(tweet.id) ? `${tweet.tweet} ` : `${tweet.tweet.slice(0, 29)}... `}</span>
             <span className="Tweet-expand">
-              {tweet.tweet.length <= 30 ? null : <button className="Expand-button" onClick={(event) => toggleExpandTweet(tweet.id, event)}>{expandedTweets.has(tweet.id) ? "read less" : "read more"}</button>}
+              {tweet.tweet.length <= 30 ? null : <button className="Expand-button" onClick={(event) => handleExpandClick(tweet.id, event)}>{expandedTweets.has(tweet.id) ? "read less" : "read more"}</button>}
             </span>
           </div>
           <div className="Tweet-stats">
@@ -131,7 +142,6 @@ return (
         </div>
       </div>
     ))}
-    <button onClick={handleButtonClick}>Example Button</button>
   </div>
 );
 };

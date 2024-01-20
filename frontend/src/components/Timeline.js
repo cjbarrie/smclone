@@ -41,6 +41,7 @@ const Timeline = () => {
 
   const handleExpandClick = (tweetId, event) => {
     event.stopPropagation();
+    // we only want to record "read more" clicks, not "read less"
     if(!expandedTweets.has(tweetId)) {
       handleInteraction('expand_tweet', tweetId, userId);
     }

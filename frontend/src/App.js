@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import Timeline from "./components/Timeline";
+import DemographicsPage from "./components/DemographicsPage"; // Make sure to import this
 import './App.css';
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/demographics" element={<DemographicsPage />} /> {/* Add this line */}
         <Route path="/timeline" element={<Timeline />} />
       </Routes>
     </Router>

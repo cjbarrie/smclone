@@ -17,20 +17,19 @@ def index():
 
 @app.route("/users", methods=["POST"])
 def create_user():
-    name = request.json.get("name")
-    email = request.json.get("email")
+    user_uuid = request.json.get("userId")
 
-    if not name or not email:
-        return jsonify({"error": "Both name and email are required"}), 400
+    if not user_uuid:
+        return jsonify({"error": "UUID is required"}), 400
 
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-    c.execute("INSERT INTO users (name, email) VALUES (?, ?)", (name, email))
+    c.execute("INSERT INTO users (uuid) VALUES (?)", (user_uuid,))
     user_id = c.lastrowid
     conn.commit()
     conn.close()
 
-    return jsonify({"id": user_id, "name": name, "email": email}), 201
+    return jsonify({"id": user_id, "uuid": user_uuid}), 201
 
 @app.route("/tweets", methods=["GET"])
 def get_tweets():

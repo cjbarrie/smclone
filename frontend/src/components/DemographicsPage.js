@@ -10,7 +10,7 @@ const DemographicsPage = () => {
   const userId = location.state?.userId;
 
   const [formData, setFormData] = useState({
-    userId: userId,
+    uuid: userId,
     age: '',
     gender: '',
     politicalOrientation: '',

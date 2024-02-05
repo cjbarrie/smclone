@@ -8,14 +8,14 @@ import DemographicsPage from "./DemographicsPage";
 const Login = () => {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
-  const userId = crypto.randomUUID();
+  const uuid = crypto.randomUUID();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch("http://localhost:5001/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId: uuid }),
     })
       // we only need to use local storage if we want the user id to persist across different sessions
       // if we do want that we'll probably need to check local storage at the beginning to retrieve the 
@@ -28,14 +28,14 @@ const Login = () => {
 
       // send user id to posthog
       posthog.capture('user_login', {
-        userId: userId
+        uuid: uuid
       });
       setSubmitted(true);
   };
   
 
   return submitted ? (
-    navigate("/demographics", { state: { userId } })
+    navigate("/demographics", { state: { userId: uuid } })
   ) : (
     <div className="Login">
       <div className="Login-box">

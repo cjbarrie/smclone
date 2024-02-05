@@ -29,7 +29,10 @@ const DemographicsPage = () => {
     }
 
     setWarningMessage('');
-    posthog.capture('demographics_submitted', formData);
+    posthog.capture('demographics_submitted', {
+      ...formData, // Spread operator to include all form data
+      userId: userId // Include userId in the event properties
+    });
     console.log(`form submitted for user ${userId}`)
     setSubmitted(true);
   };

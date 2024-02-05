@@ -73,7 +73,12 @@ const Timeline = () => {
   };
 
   const handleInteraction = (interaction, tweetId, userId) => {
-    posthog.capture(interaction, { tweet_id: tweetId, uuid: userId });
+    posthog.capture(interaction, {
+      properties: {
+        tweet_id: tweetId, 
+        userId: userId // Standardized property name
+      }
+    });
     console.log(`sent ${interaction} data to posthog for user ${userId}`)
   };
 

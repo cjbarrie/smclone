@@ -28,7 +28,7 @@ const Login = () => {
 
       // send user id to posthog
       posthog.capture('user_login', {
-        uuid: uuid
+        userId: uuid // Standardized property name
       });
       setSubmitted(true);
   };

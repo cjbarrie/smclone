@@ -105,3 +105,9 @@
 }
 
  */
+
+ .adblock-message {
+  color: #f00; /* Change the color as needed */
+  text-align: center;
+  margin-bottom: 20px; /* Adds some space below the message */
+}

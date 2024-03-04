@@ -15,21 +15,6 @@ with open("tweets.csv", newline="", encoding="utf-8") as csvfile:
 def index():
     return "Hello, World!"
 
-@app.route("/users", methods=["POST"])
-def create_user():
-    user_uuid = request.json.get("userId")
-
-    if not user_uuid:
-        return jsonify({"error": "UUID is required"}), 400
-
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("INSERT INTO users (uuid) VALUES (?)", (user_uuid,))
-    user_id = c.lastrowid
-    conn.commit()
-    conn.close()
-
-    return jsonify({"id": user_id, "uuid": user_uuid}), 201
 
 @app.route("/tweets", methods=["GET"])
 def get_tweets():

@@ -111,3 +111,18 @@
   text-align: center;
   margin-bottom: 20px; /* Adds some space below the message */
 }
+
+.countdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff; /* or any color that fits your design */
+  z-index: 1000; /* Ensure it stays on top of other content */
+  padding: 10px 0; /* Add some vertical padding for aesthetics */
+  text-align: center; /* Center the countdown text */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a subtle shadow for depth */
+}
+.Timeline {
+  padding-top: 60px; /* Adjust this value based on the height of your countdown div */
+}

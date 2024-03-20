@@ -4,6 +4,8 @@ import axios from "axios";
 import "../styles/Timeline.css";
 import posthog from "posthog-js";
 
+
+
 const Timeline = () => {
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate hook here within the component
@@ -40,7 +42,6 @@ const Timeline = () => {
     return () => clearInterval(timer); // Clean up the interval on component unmount
   }, [navigate]); // Include navigate in the dependency array to ensure it's defined
   
-  
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
     toggleLike(tweetId);
@@ -55,7 +56,6 @@ const Timeline = () => {
 
   const handleExpandClick = (tweetId, event) => {
     event.stopPropagation();
-    // we only want to record "read more" clicks, not "read less"
     if(!expandedTweets.has(tweetId)) {
       handleInteraction('expand_tweet', tweetId, userId);
     }
@@ -107,7 +107,7 @@ const Timeline = () => {
       return newExpandedTweets;
     });
   };
-  
+
   return (
     <div className="Timeline">
       <div className="countdown">Time remaining: {countdown} seconds</div>
@@ -132,7 +132,19 @@ const Timeline = () => {
               )}
             </div>
             <div className="Tweet-stats">
-              {/* Your tweet stats logic */}
+              <div className="Tweet-stat" onClick={(event) => handleRetweetClick(tweet.id, event)}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2v20l-4-4H2V6h16l4-4z"></path>
+                </svg>
+                {tweet.retweets_count + (retweetedTweets.has(tweet.id) ? 1 : 0)}
+              </div>
+              <div className="Tweet-stat" onClick={(event) => handleLikeClick(tweet.id, event)}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                {tweet.likes_count + (likedTweets.has(tweet.id) ? 1 : 0)}
+              </div>
             </div>
           </div>
         </div>
@@ -140,4 +152,5 @@ const Timeline = () => {
     </div>
   );
 };
+
 export default Timeline;

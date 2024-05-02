@@ -25,7 +25,7 @@ const Login = () => {
   };
   
   return submitted ? (
-    navigate("/demographics", { state: { userId: uuid } })
+    navigate("/timeline", { state: { userId: uuid } })
   ) : (
     <div className="Login">
       <div className="Login-box">

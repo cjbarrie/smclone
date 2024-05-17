@@ -1,8 +1,7 @@
 {
   "devDependencies": {
     "npm-run-all": "^4.1.5"
-  }, 
-
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -15,12 +14,9 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  
-"scripts": {
-  "start": "npm-run-all --parallel start:frontend start:backend",
-  "start:frontend": "cd frontend && npm start",
-  "start:backend": "export FLASK_APP=main.py && cd backend && flask run --port 5001"
-}
-
-
+  "scripts": {
+    "start": "npm-run-all --parallel start:frontend start:backend",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "export FLASK_APP=main.py && cd backend && flask run --port 5001"
+  }
 }

@@ -13,9 +13,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/demographics" element={<DemographicsPage />} />
         <Route path="/timeline" element={<Timeline />} />
-        <Route path="/end" element={<EndPage />} /> {/* Add this line for the EndPage route */}
+        <Route path="/demographics" element={<DemographicsPage />} />
+        <Route path="/end" element={<EndPage />} /> 
       </Routes>
     </Router>
   );

@@ -46,7 +46,7 @@ const DemographicsPage = () => {
 
 
   return submitted ? (
-    navigate("/timeline", { state: { userId } })
+    navigate("/end", { state: { userId } })
   ) : (
     <div className="Demographics">
       <div className="Demographics-box">

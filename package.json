@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }, 
+
+"scripts": {
+  "start": "npm-run-all --parallel build:frontend build:backend",
+  
+  "build:frontend": "cd frontend && npm run build",
+  "build:backend": "echo 'Building backend...'",
+
+  "start:frontend": "cd frontend && npm start",
+  "start:backend": "export FLASK_APP=main.py && cd backend && flask run --port 5001"
+}
+
+
+}

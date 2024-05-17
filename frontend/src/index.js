@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import posthog from "posthog-js"; // Import PostHog at the top of the file
 
+
+
 // Initialize PostHog
 posthog.init('phc_Cm9KukWEFpQd8ErJIRajlg6Qd1rWx1dzK86XYBEDfou', { api_host: 'https://app.posthog.com' })
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,7 +16,11 @@ root.render(
   </React.StrictMode>
 );
 
+
+
+
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+

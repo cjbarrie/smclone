@@ -2,6 +2,7 @@ import csv
 from flask import Flask, jsonify, request
 import sqlite3
 from flask_cors import CORS
+import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -33,6 +34,9 @@ def get_tweets():
                 "likes_count": int(tweet[5]),     # Convert likes count to integer
                 "profile_image_url": tweet[8]
             })
+
+
+    np.random.shuffle(tweets)
 
     return jsonify(tweets)
 

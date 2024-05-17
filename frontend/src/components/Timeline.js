@@ -5,8 +5,8 @@ import "../styles/Timeline.css";
 import posthog from "posthog-js";
 
 
-
 const Timeline = () => {
+
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate hook here within the component
   const userId = location.state?.userId;
@@ -17,7 +17,7 @@ const Timeline = () => {
   const [expandedTweets, setExpandedTweets] = useState(new Set());
   const [countdown, setCountdown] = useState(120); // Initialize countdown to 120 seconds for 2 minutes
   const tweetCutOffLength = 200;
-
+ 
   useEffect(() => {
     axios
       .get('http://localhost:5001/tweets')
@@ -108,6 +108,7 @@ const Timeline = () => {
     });
   };
 
+
   return (
     <div className="Timeline">
       <div className="countdown">Time remaining: {countdown} seconds</div>
@@ -150,7 +151,14 @@ const Timeline = () => {
         </div>
       ))}
     </div>
+
+
+
+
   );
+
 };
+
+
 
 export default Timeline;

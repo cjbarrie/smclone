@@ -7,6 +7,8 @@ import EndPage from "./components/EndPage"; // Import the EndPage component
 import './App.css';
 
 function App() {
+
+
   return (
     <Router>
       <Routes>
@@ -18,5 +20,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

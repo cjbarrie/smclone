@@ -8,18 +8,19 @@ import os
 
 app = Flask(__name__,
     static_url_path='',
-    static_folder ='frontent/build')
+    static_folder ='frontend/build')
 CORS(app)
 
-absolute_path = os.path.abspath("tweets.csv")
+tweets_path = os.path.abspath("./tweets.csv")
 
 
 # Load tweets from CSV file
-with open(absolute_path, newline="", encoding="utf-8") as csvfile:
+with open(tweets_path, newline="", encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile)
     tweets = [row for row in reader]
 
 @app.route("/")
+
 
 def index():
     return "Hello, World!"
@@ -28,7 +29,7 @@ def index():
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
 
-    with open(absolute_path, newline='', encoding='utf-8') as csvfile:
+    with open(tweets_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # skip the header row
         for tweet in reader:

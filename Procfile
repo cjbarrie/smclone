@@ -1,4 +1,1 @@
-web: gunicorn -b 0.0.0.0:$PORT wsgi:app
-web: npm start
-
-
+web: gunicorn wsgi:app

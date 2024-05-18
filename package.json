@@ -15,7 +15,7 @@
   "scripts": {
     "start": "npm-run-all --parallel start:frontend start:backend",
     "start:frontend": "cd frontend && npm start",
-    "start:backend": "export FLASK_APP=main.py && cd backend && flask run --port $PORT",
+    "start:backend": "export FLASK_APP=main.py && cd backend && flask run --port 5001",
     "heroku-postbuild": "cd frontend && npm run build"
   }
 }

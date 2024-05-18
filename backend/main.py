@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__,
     static_url_path='',
-    static_folder ='frontend/build')
+    static_folder ='../frontend/build')
 CORS(app)
 
 absolute_path = os.path.abspath("tweets.csv")

@@ -20,7 +20,7 @@ const Timeline = () => {
  
   useEffect(() => {
     axios
-      .get('http://localhost:5001/tweets')
+      .get('https://smclone-6b4ba4a7c4d1.herokuapp.com/tweets')
       .then((response) => {
         setTweets(response.data);
       })

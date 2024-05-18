@@ -22,7 +22,7 @@ def index():
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
     tweets = []
-    with open('tweets.csv', newline='', encoding='utf-8') as csvfile:
+    with open('./tweets.csv', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # skip the header row
         for tweet in reader:

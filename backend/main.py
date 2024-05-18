@@ -20,7 +20,7 @@ import os
 tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tweets.csv'))
 
 
-frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'frontend/build'))
+frontend_path = os.path.abspath('frontend/build')
 
 # Load tweets from CSV file
 with open(tweets_path, newline="", encoding="utf-8") as csvfile:

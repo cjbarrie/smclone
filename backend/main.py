@@ -11,8 +11,13 @@ app = Flask(__name__,
     static_folder ='frontend/build')
 CORS(app)
 
-tweets_path = "static/tweets.csv"
+absolute_path = os.path.abspath("tweets.csv")
 
+
+import os
+
+# Get the absolute path to the CSV file relative to the current file's directory
+tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tweets.csv'))
 
 # Load tweets from CSV file
 with open(tweets_path, newline="", encoding="utf-8") as csvfile:

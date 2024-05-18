@@ -21,6 +21,9 @@ def index():
     return "Hello, World!"
 
 
+absolute_path = os.path.abspath("tweets.csv")
+
+
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
     tweets = []
@@ -31,7 +34,7 @@ def get_tweets():
     print("Files in the current directory:", os.listdir())
 
 
-    with open('./tweets.csv', newline='', encoding='utf-8') as csvfile:
+    with open(absolute_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # skip the header row
         for tweet in reader:

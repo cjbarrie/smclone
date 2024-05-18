@@ -4,7 +4,9 @@ import sqlite3
 from flask_cors import CORS
 import numpy as np
 
-app = Flask(__name__)
+app = Flask(__name__,
+    static_url_path='',
+    static_folder ='frontent/build')
 CORS(app)
 
 # Load tweets from CSV file

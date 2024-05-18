@@ -11,28 +11,22 @@ app = Flask(__name__,
     static_folder ='frontent/build')
 CORS(app)
 
+absolute_path = os.path.abspath("tweets.csv")
+
+
 # Load tweets from CSV file
-with open("tweets.csv", newline="", encoding="utf-8") as csvfile:
+with open(absolute_path, newline="", encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile)
     tweets = [row for row in reader]
 
 @app.route("/")
+
 def index():
     return "Hello, World!"
 
 
-absolute_path = os.path.abspath("tweets.csv")
-
-
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
-    tweets = []
-
-    print("Current working directory:", os.getcwd())
-
-    # Print the list of files in the current directory
-    print("Files in the current directory:", os.listdir())
-
 
     with open(absolute_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)

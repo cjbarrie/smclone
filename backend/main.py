@@ -27,11 +27,12 @@ with open(tweets_path, newline="", encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile)
     tweets = [row for row in reader]
 
+
 @app.route("/")
 
-
 def index():
-    return send_from_directory(frontend_path, 'index.html')
+    return frontend_path
+    # return send_from_directory(frontend_path, 'index.html')
 
 
 @app.route("/tweets", methods=["GET"])

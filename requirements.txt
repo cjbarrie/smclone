@@ -5,3 +5,4 @@ gunicorn==20.1.0
 flask-cors==4.0.0
 numpy==1.21.0
 six==1.16.0
+csv

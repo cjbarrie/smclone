@@ -28,7 +28,7 @@ with open(tweets_path, newline="", encoding="utf-8") as csvfile:
 
 
 def index():
-    return "Hello, World!!!"
+    return send_from_directory('frontend/build', 'index.html')
 
 
 @app.route("/tweets", methods=["GET"])

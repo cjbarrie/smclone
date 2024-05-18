@@ -27,8 +27,8 @@ def get_tweets():
 
     print("Current working directory:", os.getcwd())
 
-# Print the list of files in the current directory
-print("Files in the current directory:", os.listdir())
+    # Print the list of files in the current directory
+    print("Files in the current directory:", os.listdir())
 
 
     with open('./tweets.csv', newline='', encoding='utf-8') as csvfile:

@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request
 import sqlite3
 from flask_cors import CORS
 import numpy as np
+import os  
+
 
 app = Flask(__name__,
     static_url_path='',
@@ -22,6 +24,13 @@ def index():
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
     tweets = []
+
+    print("Current working directory:", os.getcwd())
+
+# Print the list of files in the current directory
+print("Files in the current directory:", os.listdir())
+
+
     with open('./tweets.csv', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # skip the header row

@@ -36,12 +36,16 @@ def index():
 
 
 #check this
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+
 def catch_all(path):
     # Serve the React app for any route
     if path != '' and os.path.exists(os.path.join(frontend_path, path)):
         return send_from_directory(frontend_path, path)
     else:
         return render_template('index.html')
+
 
 @app.route("/tweets", methods=["GET"])
 def get_tweets():

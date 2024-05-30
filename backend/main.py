@@ -1,5 +1,5 @@
 import csv
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template
 import sqlite3
 from flask_cors import CORS
 import numpy as np
@@ -35,6 +35,14 @@ def index():
     return send_from_directory(frontend_path, 'index.html')
 
 
+#check this
+def catch_all(path):
+    # Serve the React app for any route
+    if path != '' and os.path.exists(os.path.join(frontend_path, path)):
+        return send_from_directory(frontend_path, path)
+    else:
+        return render_template('index.html')
+
 @app.route("/tweets", methods=["GET"])
 def get_tweets():
 
@@ -62,4 +70,3 @@ def get_tweets():
 if __name__ == "__main__":
     app.run(debug=True)
 
-    

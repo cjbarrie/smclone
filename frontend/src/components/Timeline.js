@@ -18,6 +18,7 @@ const Timeline = () => {
   const [countdown, setCountdown] = useState(120); // Initialize countdown to 120 seconds for 2 minutes
   const tweetCutOffLength = 200;
  
+
   useEffect(() => {
     axios
       .get('https://smclone-6b4ba4a7c4d1.herokuapp.com/tweets')
@@ -26,7 +27,8 @@ const Timeline = () => {
       })
       .catch((error) => {
         console.error('Error fetching tweets:', error);
-      });
+      }, []);
+
 
     const timer = setInterval(() => {
       setCountdown((currentCountdown) => {
@@ -40,7 +42,8 @@ const Timeline = () => {
     }, 1000); // Update countdown every second
 
     return () => clearInterval(timer); // Clean up the interval on component unmount
-  }, [navigate]); // Include navigate in the dependency array to ensure it's defined
+  // }, [navigate]); 
+   }, []); 
   
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
@@ -154,8 +157,9 @@ const Timeline = () => {
 
 
 
-
   );
+
+
 
 };
 

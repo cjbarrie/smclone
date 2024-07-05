@@ -22,6 +22,7 @@ tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tweets.cs
 
 frontend_path = os.path.abspath('frontend/build')
 
+
 # Load tweets from CSV file
 with open(tweets_path, newline="", encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile)
@@ -48,7 +49,10 @@ def catch_all(path):
 
 
 @app.route("/tweets", methods=["GET"])
+
 def get_tweets():
+
+    tweets = []
 
     with open(tweets_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)

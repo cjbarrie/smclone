@@ -131,7 +131,7 @@ const Timeline = () => {
               </span>
               {tweet.tweet.length > tweetCutOffLength && (
                 <button className="Expand-button" onClick={(event) => handleExpandClick(tweet.id, event)}>
-                  {expandedTweets.has(tweet.id) ? "Read less" : "Read more"}
+                  {expandedTweets.has(tweet.id) ? "" : "Read more"}
                 </button>
               )}
             </div>

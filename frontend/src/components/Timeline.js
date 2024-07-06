@@ -34,7 +34,7 @@ const Timeline = () => {
       setCountdown((currentCountdown) => {
         if (currentCountdown <= 1) {
           clearInterval(timer);
-          navigate("/demographics"); // Use navigate to redirect after countdown ends
+          navigate("/end"); // Use navigate to redirect after countdown ends
           return 0;
         }
         return currentCountdown - 1;

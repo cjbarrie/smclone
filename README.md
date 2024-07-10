@@ -2,6 +2,8 @@
 
 Repository for React social media clone environment
 
+To run backend + frontend together: npm run start
+
 To run backend:
 
 ```

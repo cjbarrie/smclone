@@ -18,21 +18,23 @@ const Timeline = () => {
   const [countdown, setCountdown] = useState(120); // Initialize countdown to 120 seconds for 2 minutes
   const tweetCutOffLength = 200;
  
+
   useEffect(() => {
     axios
-      .get('http://localhost:5001/tweets')
+      .get('https://smclone-6b4ba4a7c4d1.herokuapp.com/tweets')
       .then((response) => {
         setTweets(response.data);
       })
       .catch((error) => {
         console.error('Error fetching tweets:', error);
-      });
+      }, []);
+
 
     const timer = setInterval(() => {
       setCountdown((currentCountdown) => {
         if (currentCountdown <= 1) {
           clearInterval(timer);
-          navigate("/demographics"); // Use navigate to redirect after countdown ends
+          navigate("/end"); // Use navigate to redirect after countdown ends
           return 0;
         }
         return currentCountdown - 1;
@@ -40,7 +42,8 @@ const Timeline = () => {
     }, 1000); // Update countdown every second
 
     return () => clearInterval(timer); // Clean up the interval on component unmount
-  }, [navigate]); // Include navigate in the dependency array to ensure it's defined
+  // }, [navigate]); 
+   }, []); 
   
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
@@ -128,7 +131,7 @@ const Timeline = () => {
               </span>
               {tweet.tweet.length > tweetCutOffLength && (
                 <button className="Expand-button" onClick={(event) => handleExpandClick(tweet.id, event)}>
-                  {expandedTweets.has(tweet.id) ? "Read less" : "Read more"}
+                  {expandedTweets.has(tweet.id) ? "" : "Read more"}
                 </button>
               )}
             </div>
@@ -154,8 +157,9 @@ const Timeline = () => {
 
 
 
-
   );
+
+
 
 };
 

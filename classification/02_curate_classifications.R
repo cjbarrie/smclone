@@ -21,3 +21,14 @@ tweetspreleclr <- tweetsprelec %>%
   filter(code_gpt != "Neither left nor right" & !is.na(code_gpt))
 
 write_csv(tweetspreleclr, "data/pre-election_timeline.csv")
+
+
+
+# 
+# datfull <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/ukgetweets/data/processed/mptweets_all.csv")
+# 
+# candidates <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/ukgetweets/data/raw/candidates_all_final.csv")
+# 
+# datfull %>%
+#   distinct(screen_name) %>%
+#   count()

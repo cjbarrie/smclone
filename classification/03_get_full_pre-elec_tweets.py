@@ -65,4 +65,4 @@ tweets = tweets[(tweets['created_at'] < pd.Timestamp('2024-05-22')) &
 tweets['created_at'] = tweets['created_at'].dt.strftime('%d-%m-%Y')
 
 # Save the filtered DataFrame to a new CSV file
-tweets.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_pre-election_ALL.csv", index=False)
+tweets.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smcloneold/classification/data/tweets_pre-election_ALL.csv", index=False)

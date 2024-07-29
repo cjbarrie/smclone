@@ -1,6 +1,5 @@
 library(dplyr)
 library(readr)
-library(tidylog)
 
 options(scipen = 999)
 set.seed(123L)
@@ -11,10 +10,10 @@ dat <- read_csv("data/tweets_pre-elec_classified.csv") %>%
 
 # Sample tweets from each classification
 sampled_tweets <- bind_rows(
-  dat %>% filter(classification == "Very right") %>% slice_sample(n = 30),
-  dat %>% filter(classification == "Somewhat right") %>% slice_sample(n = 30),
-  dat %>% filter(classification == "Very left") %>% slice_sample(n = 30),
-  dat %>% filter(classification == "Somewhat left") %>% slice_sample(n = 30)
+  dat %>% filter(classification == "Very right") %>% slice_sample(n = 40),
+  dat %>% filter(classification == "Somewhat right") %>% slice_sample(n = 40),
+  dat %>% filter(classification == "Very left") %>% slice_sample(n = 40),
+  dat %>% filter(classification == "Somewhat left") %>% slice_sample(n = 40)
 ) %>%
   select(id_str, text, classification)
 
@@ -22,7 +21,7 @@ write_csv(sampled_tweets, "data/pre-election_to_use.csv")
 
 # Get full tweets data 
 
-datfull <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone_old/classification/data/tweets_pre-election_ALL.csv") %>%
+datfull <- read_csv("data/tweets_pre-election_ALL.csv") %>%
   select(
     id_str,
     user.id_str,
@@ -51,6 +50,14 @@ final_data <- final_data %>%
     username = user.screen_name,
     profile_image_url = user.profile_image_url
   )
+
+# Sample tweets from each classification
+final_data <- bind_rows(
+  dat %>% filter(classification == "Very right") %>% slice_sample(n = 30),
+  dat %>% filter(classification == "Somewhat right") %>% slice_sample(n = 30),
+  dat %>% filter(classification == "Very left") %>% slice_sample(n = 30),
+  dat %>% filter(classification == "Somewhat left") %>% slice_sample(n = 30)
+)
 
 write_csv(final_data, "data/final/pre-election_to_use_final.csv")
 

@@ -1,5 +1,6 @@
 library(dplyr)
 library(readr)
+library(tidylog)
 
 options(scipen = 999)
 set.seed(123L)
@@ -21,7 +22,7 @@ write_csv(sampled_tweets, "data/pre-election_to_use.csv")
 
 # Get full tweets data 
 
-datfull <- read_csv("data/tweets_pre-election_ALL.csv") %>%
+datfull <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone_old/classification/data/tweets_pre-election_ALL.csv") %>%
   select(
     id_str,
     user.id_str,
@@ -39,7 +40,7 @@ sampled_tweetids <- sampled_tweets %>%
 # Join sampled_tweets with datfull on id_str in sampled_tweets and id in datfull
 final_data <- left_join(sampled_tweetids, datfull, by = c("id_str"))
 
-final_datat <- final_data %>%
+final_data <- final_data %>%
   rename(
     id = id_str,
     user_id = user.id_str,
@@ -51,5 +52,5 @@ final_datat <- final_data %>%
     profile_image_url = user.profile_image_url
   )
 
-write_csv(sampled_tweets, "data/final/pre-election_to_use_final.csv")
+write_csv(final_data, "data/final/pre-election_to_use_final.csv")
 

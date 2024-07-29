@@ -16,7 +16,7 @@ const Timeline = () => {
   const [retweetedTweets, setRetweetedTweets] = useState(new Set());
   const [expandedTweets, setExpandedTweets] = useState(new Set());
   const [countdown, setCountdown] = useState(120); // Initialize countdown to 120 seconds for 2 minutes
-  const tweetCutOffLength = 200;
+  const tweetCutOffLength = 100;
  
 
   useEffect(() => {

@@ -61,12 +61,12 @@ def get_tweets():
             tweets.append({
                 "id": tweet[1],
                 "user_id": tweet[2],
-                "username": tweet[6],
-                "name": tweet[7],
-                "tweet": tweet[3],
-                "retweets_count": int(tweet[4]),  # Convert retweets count to integer
-                "likes_count": int(tweet[5]),     # Convert likes count to integer
-                "profile_image_url": tweet[8]
+                "username": tweet[5],
+                "name": tweet[6],
+                "tweet": tweet[8],
+                "retweets_count": int(tweet[3]),  # Convert retweets count to integer
+                "likes_count": int(tweet[4]),     # Convert likes count to integer
+                "profile_image_url": tweet[7]
             })
 
 

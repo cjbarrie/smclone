@@ -14,7 +14,8 @@ tweetsdat <- read_csv("data/test/tweets.csv") %>%
 posthogdat_filtered <- posthogdat %>%
   select(session_id = `*.properties.$session_id`,
          prolific_id = `*.properties.PROLIFIC_PID`,
-         tweet_id = `*.properties.properties.tweet_id`)
+         tweet_id = `*.properties.properties.tweet_id`,
+         event_type = `*.event`) # Add the event type column
 
 # Fill in where cell doesn't contain prolific ID
 posthogdat_filtered <- posthogdat_filtered %>%

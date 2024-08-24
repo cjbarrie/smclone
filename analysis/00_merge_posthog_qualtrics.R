@@ -1,5 +1,6 @@
 library(dplyr)
 library(readr)
+library(ggplot2)
 options(scipen = 999)
 
 qualtricsdat <- read_csv("data/test/qualtrics.csv")
@@ -27,3 +28,8 @@ posthogdat_filtered <- posthogdat_filtered %>%
 posthogdat_filtered <- posthogdat_filtered %>%
   left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
   filter(!is.na(classification))
+
+# Merge in qualtrics data
+data_merged <- posthogdat_filtered %>%
+  left_join(qualtricsdat, by = c("prolific_id" = "Q1")) %>%
+  filter(!is.na(prolific_id))

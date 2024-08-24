@@ -18,6 +18,10 @@
     max-width: 400px;
     width: 100%;
   }
+
+  #intro-text, p {
+    text-align: left;
+  }
   
   .Login-button {
     padding: 0.5rem;

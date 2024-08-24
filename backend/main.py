@@ -4,6 +4,7 @@ import sqlite3
 from flask_cors import CORS
 import numpy as np
 import os  
+import random
 
 
 app = Flask(__name__,
@@ -64,8 +65,8 @@ def get_tweets():
                 "username": tweet[5],
                 "name": tweet[6],
                 "tweet": tweet[8],
-                "retweets_count": int(tweet[3]),  # Convert retweets count to integer
-                "likes_count": int(tweet[4]),     # Convert likes count to integer
+                "retweets_count": random.randint(3, 10),  # Convert retweets count to integer,
+                "likes_count": random.randint(3, 10),     # Convert likes count to integer
                 "profile_image_url": tweet[7]
             })
 

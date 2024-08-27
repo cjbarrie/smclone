@@ -56,13 +56,27 @@
 
 .Tweet-stats {
   display: flex;
+  align-items: center;
 }
 
 .Tweet-stat {
   display: flex;
   align-items: center;
-  margin-right: 1rem;
   cursor: pointer;
+}
+
+.Tweet-stat.retweet {
+  margin-right: 1rem; /* Increase space after retweet count */
+}
+
+.Tweet-stat.like {
+  margin-left: 1rem; /* Adjust the space between retweet count and like icon */
+}
+
+.Tweet-count {
+  margin-left: 0.2rem;
+  cursor: default;
+  color: #657786;
 }
 
 .Tweet-stat:hover {

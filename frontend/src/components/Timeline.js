@@ -137,11 +137,11 @@ const Timeline = () => {
             <div className="Tweet-stats">
               <div className="Tweet-stat retweet" onClick={(event) => handleRetweetClick(tweet.id, event)}>
                 <span role="img" aria-label="retweet">🔁</span>
-                <span className="Tweet-count">{tweet.retweets_count + (retweetedTweets.has(tweet.id) ? 1 : 0)}</span>
+                <span className="Tweet-count">{Number(tweet.retweets_count) + (retweetedTweets.has(tweet.id) ? 1 : 0)}</span>
               </div>
               <div className="Tweet-stat like" onClick={(event) => handleLikeClick(tweet.id, event)}>
                 <span role="img" aria-label="like">❤️</span>
-                <span className="Tweet-count">{tweet.likes_count + (likedTweets.has(tweet.id) ? 1 : 0)}</span>
+                <span className="Tweet-count">{Number(tweet.likes_count) + (likedTweets.has(tweet.id) ? 1 : 0)}</span>
               </div>
             </div>
           </div>

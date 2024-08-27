@@ -65,8 +65,8 @@ def get_tweets():
                 "username": tweet[5],
                 "name": tweet[6],
                 "tweet": tweet[8],
-                "retweets_count": random.randint(3, 10),  # Convert retweets count to integer,
-                "likes_count": random.randint(3, 10),     # Convert likes count to integer
+                "retweets_count": tweet[13],  # Convert retweets count to integer,
+                "likes_count":tweet[14],     # Convert likes count to integer
                 "profile_image_url": tweet[7]
             })
 

@@ -57,6 +57,16 @@ plot_map(data_merged)
 data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
 hist(data_merged$ideo_numeric)
 
+# Tabulate attention checks
+attention_merged <- data_merged %>%
+  select(prolific_id, Q13_1, Q13_2, Q13_3) %>%
+  mutate(attention_combination = paste(Q13_1, Q13_2, Q13_3, sep = " ")) %>%
+  distinct(.keep_all = T)
+
+attention_tabulation <- attention_merged %>%
+  count(attention_combination) %>%
+  arrange(desc(n))
+
 # Function to recode variables and run logistic regression
 run_analysis <- function(data, event_type_filter) {
   filtered_data <- data %>%

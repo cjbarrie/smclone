@@ -72,11 +72,25 @@ run_analysis <- function(data, event_type_filter) {
   filtered_data <- data %>%
     filter(event_type == event_type_filter)
   
-  filtered_data$binary_tweet <- ifelse(filtered_data$classification %in% c("Very left", "Somewhat left"), 1, 0)
+  filtered_data$binary_tweet <- ifelse(filtered_data$classification %in% c("Very left", "Somewhat left"), 0, 1)
+  
+  # Recode political interest
+  filtered_data <- filtered_data %>%
+    mutate(polint = case_when(
+      Q14_1 == "0 (Not at all interested)" ~ 0,
+      Q14_1 == "1" ~ 1,
+      Q14_1 == "2" ~ 2,
+      Q14_1 == "3" ~ 3,
+      Q14_1 == "4" ~ 4,
+      Q14_1 == "5 (Very interested)" ~ 5,
+      TRUE ~ NA_real_  # Handle any unexpected values as NA
+    ))
+  
+  # Recode age and gender
   filtered_data$gender <- ifelse(filtered_data$Q9 == "Prefer not to say", NA, filtered_data$Q9)
   filtered_data$age <- as.numeric(filtered_data$Q8)
   
-  # Recode Education
+  # Recode Education based on age for those still at school/full time student
   filtered_data$education <- dplyr::case_when(
     filtered_data$Q10 == "20+" ~ 20,
     filtered_data$Q10 == "15 or under" ~ 15,
@@ -84,13 +98,9 @@ run_analysis <- function(data, event_type_filter) {
     filtered_data$Q10 == "17-18" ~ 18,
     filtered_data$Q10 == "16" ~ 16,
     filtered_data$Q10 == "Can't remember" ~ NA_real_,
-    filtered_data$Q10 == "Still at school/Full time student" ~ NA_real_,  # Temporary NA for now
+    filtered_data$Q10 == "Still at school/Full time student" ~ as.numeric(filtered_data$age),  # Use respondent's age
     TRUE ~ NA_real_  # Catch all for any other unexpected values
   )
-  
-  # Randomly assign 16 or 19 to "Still at school/Full time student"
-  still_at_school_rows <- which(filtered_data$Q10 == "Still at school/Full time student")
-  filtered_data$education[still_at_school_rows] <- sample(c(16, 19), length(still_at_school_rows), replace = TRUE)
   
   # Create a numeric scale for income
   income_levels <- c("Less than £5,000" = 1,
@@ -115,7 +125,7 @@ run_analysis <- function(data, event_type_filter) {
   filtered_data$smuse <- sapply(strsplit(filtered_data$Q7, ","), length)
   
   # Running the logistic regression
-  logistic_model <- glm(binary_tweet ~ ideo_numeric + gender + age + income + smuse + education, 
+  logistic_model <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education, 
                         data = filtered_data, 
                         family = binomial)
   
@@ -139,11 +149,25 @@ run_analysis_extract_coef <- function(data, event_type_filter) {
   filtered_data <- data %>%
     filter(event_type == event_type_filter)
   
-  filtered_data$binary_tweet <- ifelse(filtered_data$classification %in% c("Very left", "Somewhat left"), 1, 0)
+  filtered_data$binary_tweet <- ifelse(filtered_data$classification %in% c("Very left", "Somewhat left"), 0, 1)
+  
+  # Recode political interest
+  filtered_data <- filtered_data %>%
+    mutate(polint = case_when(
+      Q14_1 == "0 (Not at all interested)" ~ 0,
+      Q14_1 == "1" ~ 1,
+      Q14_1 == "2" ~ 2,
+      Q14_1 == "3" ~ 3,
+      Q14_1 == "4" ~ 4,
+      Q14_1 == "5 (Very interested)" ~ 5,
+      TRUE ~ NA_real_  # Handle any unexpected values as NA
+    ))
+  
+  # Recode age and gender
   filtered_data$gender <- ifelse(filtered_data$Q9 == "Prefer not to say", NA, filtered_data$Q9)
   filtered_data$age <- as.numeric(filtered_data$Q8)
   
-  # Recode Education
+  # Recode Education based on age for those still at school/full time student
   filtered_data$education <- dplyr::case_when(
     filtered_data$Q10 == "20+" ~ 20,
     filtered_data$Q10 == "15 or under" ~ 15,
@@ -151,13 +175,9 @@ run_analysis_extract_coef <- function(data, event_type_filter) {
     filtered_data$Q10 == "17-18" ~ 18,
     filtered_data$Q10 == "16" ~ 16,
     filtered_data$Q10 == "Can't remember" ~ NA_real_,
-    filtered_data$Q10 == "Still at school/Full time student" ~ NA_real_,  # Temporary NA for now
+    filtered_data$Q10 == "Still at school/Full time student" ~ as.numeric(filtered_data$age),  # Use respondent's age
     TRUE ~ NA_real_  # Catch all for any other unexpected values
   )
-  
-  # Randomly assign 16 or 19 to "Still at school/Full time student"
-  still_at_school_rows <- which(filtered_data$Q10 == "Still at school/Full time student")
-  filtered_data$education[still_at_school_rows] <- sample(c(16, 19), length(still_at_school_rows), replace = TRUE)
   
   # Create a numeric scale for income
   income_levels <- c("Less than £5,000" = 1,
@@ -182,7 +202,7 @@ run_analysis_extract_coef <- function(data, event_type_filter) {
   filtered_data$smuse <- sapply(strsplit(filtered_data$Q7, ","), length)
   
   # Running the logistic regression
-  logistic_model <- glm(binary_tweet ~ ideo_numeric + gender + age + income + smuse + education, 
+  logistic_model <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education, 
                         data = filtered_data, 
                         family = binomial)
   

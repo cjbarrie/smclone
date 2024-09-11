@@ -7,24 +7,11 @@ options(scipen = 999)
 # Read in data
 qualtricsdat <- read_csv("data/main/qualtrics.csv")
 qualtricsdat <- qualtricsdat[-c(1:2),]
-posthogdat <- read_csv("data/main/posthog.csv")
+posthogdat_filtered <- read_csv("data/main/posthog.csv")
 tweetsdat <- read_csv("data/main/tweets.csv") %>%
   select(id, classification, retweets_count, likes_count)
 
 tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
-
-# Extract relevant information from posthogdat
-posthogdat_filtered <- posthogdat %>%
-  select(session_id = `*.properties.$session_id`,
-         prolific_id = `*.properties.PROLIFIC_PID`,
-         tweet_id = `*.properties.properties.tweet_id`,
-         event_type = `*.event`) # Add the event type column
-
-# Fill in where cell doesn't contain prolific ID
-posthogdat_filtered <- posthogdat_filtered %>%
-  group_by(session_id) %>%
-  mutate(prolific_id = ifelse(is.na(prolific_id), first(na.omit(prolific_id)), prolific_id)) %>%
-  ungroup()
 
 # Merge in tweets and qualtrics data
 data_merged <- posthogdat_filtered %>%

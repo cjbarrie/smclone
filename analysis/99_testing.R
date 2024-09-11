@@ -1,0 +1,346 @@
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(broom)
+options(scipen = 999)
+
+# Read in data
+qualtricsdat <- read_csv("data/main/qualtrics.csv")
+qualtricsdat <- qualtricsdat[-c(1:2),]
+posthogdat <- read_csv("data/main/posthog.csv")
+tweetsdat <- read_csv("data/main/tweets.csv") %>%
+  select(id, classification, retweets_count, likes_count)
+
+tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
+
+# Extract relevant information from posthogdat
+posthogdat_filtered <- posthogdat %>%
+  select(session_id = `*.properties.$session_id`,
+         prolific_id = `*.properties.PROLIFIC_PID`,
+         tweet_id = `*.properties.properties.tweet_id`,
+         event_type = `*.event`) # Add the event type column
+
+# Fill in where cell doesn't contain prolific ID
+posthogdat_filtered <- posthogdat_filtered %>%
+  group_by(session_id) %>%
+  mutate(prolific_id = ifelse(is.na(prolific_id), first(na.omit(prolific_id)), prolific_id)) %>%
+  ungroup()
+
+# Merge in tweets and qualtrics data
+data_merged <- posthogdat_filtered %>%
+  left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
+  filter(!is.na(classification)) %>%
+  left_join(qualtricsdat, by = c("prolific_id" = "Q1")) %>%
+  filter(!is.na(prolific_id))
+
+# data_merged$StartDate <- as.Date(data_merged$StartDate)
+# data_merged <- data_merged %>%
+#   filter(StartDate >= "2024-08-23")
+# 
+# # Map plot function
+# plot_map <- function(data) {
+#   UK <- map_data(map = "world", region = "UK")
+#   ggplot() +
+#     geom_polygon(data = UK, aes(x = long, y = lat, group = group), fill = "lightblue", color = "white") +
+#     geom_point(data = data, aes(x = LocationLongitude, y = LocationLatitude), color = "red", size = 2) +
+#     coord_quickmap(xlim = c(-10, 5), ylim = c(49, 61)) +
+#     theme_minimal() +
+#     labs(title = "Respondent IP address locations",
+#          x = "Longitude",
+#          y = "Latitude")
+# }
+# 
+# # Plot the map
+# data_merged$LocationLatitude <- as.numeric(data_merged$LocationLatitude)
+# data_merged$LocationLongitude <- as.numeric(data_merged$LocationLongitude)
+# plot_map(data_merged)
+
+# Plot distribution of ideology scores
+data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
+hist(data_merged$ideo_numeric)
+
+# Tabulate attention checks
+attention_merged <- data_merged %>%
+  select(prolific_id, Q13_1, Q13_2, Q13_3) %>%
+  mutate(attention_combination = paste(Q13_1, Q13_2, Q13_3, sep = " ")) %>%
+  distinct(.keep_all = T)
+
+attention_tabulation <- attention_merged %>%
+  count(attention_combination) %>%
+  arrange(desc(n))
+
+# Function to standardize numeric variables
+standardize <- function(df, variables) {
+  df %>% mutate(across(all_of(variables), scale))
+}
+
+# Create an empty list to store regression summaries
+regression_summaries <- list()
+
+# Function to run logistic regression on standardized data and save results in a list
+run_analysis_extract_all_coefs <- function(data, event_type_filter, save_output = FALSE) {
+  filtered_data <- data %>%
+    filter(event_type == event_type_filter)
+  
+  filtered_data$binary_tweet <- ifelse(filtered_data$classification %in% c("Very left", "Somewhat left"), 0, 1)
+  
+  # Recode and standardize relevant variables
+  filtered_data <- filtered_data %>%
+    mutate(polint = case_when(
+      Q14_1 == "0 (Not at all interested)" ~ 0,
+      Q14_1 == "1" ~ 1,
+      Q14_1 == "2" ~ 2,
+      Q14_1 == "3" ~ 3,
+      Q14_1 == "4" ~ 4,
+      Q14_1 == "5 (Very interested)" ~ 5,
+      TRUE ~ NA_real_
+    ),
+    gender = ifelse(Q9 == "Prefer not to say", NA, as.numeric(factor(Q9))),
+    age = as.numeric(Q8),
+    education = case_when(
+      Q10 == "20+" ~ 20,
+      Q10 == "15 or under" ~ 15,
+      Q10 == "19" ~ 19,
+      Q10 == "17-18" ~ 18,
+      Q10 == "16" ~ 16,
+      Q10 == "Can't remember" ~ NA_real_,
+      Q10 == "Still at school/Full time student" ~ as.numeric(age),
+      TRUE ~ NA_real_
+    ),
+    income = case_when(
+      Q11 == "Less than £5,000" ~ 1,
+      Q11 == "£5,000–£9,999" ~ 2,
+      Q11 == "£10,000–£14,999" ~ 3,
+      Q11 == "£15,000–£19,999" ~ 4,
+      Q11 == "£20,000–£24,999" ~ 5,
+      Q11 == "£25,000–£29,999" ~ 6,
+      Q11 == "£30,000–£34,999" ~ 7,
+      Q11 == "£35,000–£39,999" ~ 8,
+      Q11 == "£40,000–£44,999" ~ 9,
+      Q11 == "£45,000–£49,999" ~ 10,
+      Q11 == "£50,000–£59,999" ~ 11,
+      Q11 == "£60,000–£69,999" ~ 12,
+      Q11 == "£70,000–£99,999" ~ 13,
+      Q11 == "£100,000–£149,999" ~ 14,
+      Q11 == "Prefer not to say" ~ NA_real_
+    ),
+    smuse = sapply(strsplit(Q7, ","), length),
+    endorsement = endorsement
+    )
+  
+  # List of numeric variables to standardize
+  variables_to_standardize <- c("ideo_numeric", "polint", "age", "education", "income", "smuse", "endorsement")
+  
+  # Standardize the data
+  filtered_data <- standardize(filtered_data, variables_to_standardize)
+  
+  # Running the logistic regression
+  logistic_model <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                        data = filtered_data, 
+                        family = binomial)
+  
+  # Save the summary of the model to the list
+  if (save_output) {
+    regression_summaries[[event_type_filter]] <<- summary(logistic_model)
+  }
+  
+  # Extract coefficients for all terms
+  coef_data <- tidy(logistic_model) %>%
+    mutate(event_type = event_type_filter)
+  
+  return(coef_data)
+}
+
+# Run analysis and extract coefficients for each event type, saving results in the list
+coef_like_click <- run_analysis_extract_all_coefs(data_merged, "like_click", save_output = TRUE)
+coef_retweet_click <- run_analysis_extract_all_coefs(data_merged, "retweet_click", save_output = TRUE)
+coef_expand_tweet <- run_analysis_extract_all_coefs(data_merged, "expand_tweet", save_output = TRUE)
+
+# Combine the coefficients into one data frame
+coef_data_combined <- bind_rows(coef_like_click, coef_retweet_click, coef_expand_tweet)
+
+# Plotting all coefficients with error bars for each event type
+ggplot(coef_data_combined, aes(x = term, y = estimate, ymin = estimate - std.error, ymax = estimate + std.error, color = event_type)) +
+  geom_pointrange(position = position_dodge(width = 0.5)) +
+  theme_minimal() +
+  labs(title = "Effect of Variables on Different Event Types",
+       x = "Variables",
+       y = "Coefficient Estimate (with 95% CI)") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_wrap(~ event_type, scales = "free_x")
+
+# Access the saved summaries from the `regression_summaries` list
+regression_summaries[["expand_tweet"]]
+regression_summaries[["retweet_click"]]
+regression_summaries[["like_click"]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(broom)
+options(scipen = 999)
+
+# Read in data
+qualtricsdat <- read_csv("data/main/qualtrics.csv")
+qualtricsdat <- qualtricsdat[-c(1:2),]
+posthogdat <- read_csv("data/main/posthog.csv")
+tweetsdat <- read_csv("data/main/tweets.csv") %>%
+  select(id, classification, retweets_count, likes_count)
+
+tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
+
+# Extract relevant information from posthogdat
+posthogdat_filtered <- posthogdat %>%
+  select(session_id = `*.properties.$session_id`,
+         prolific_id = `*.properties.PROLIFIC_PID`,
+         tweet_id = `*.properties.properties.tweet_id`,
+         event_type = `*.event`) # Add the event type column
+
+# Fill in where cell doesn't contain prolific ID
+posthogdat_filtered <- posthogdat_filtered %>%
+  group_by(session_id) %>%
+  mutate(prolific_id = ifelse(is.na(prolific_id), first(na.omit(prolific_id)), prolific_id)) %>%
+  ungroup()
+
+# Merge in tweets and qualtrics data
+data_merged <- posthogdat_filtered %>%
+  left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
+  filter(!is.na(classification)) %>%
+  left_join(qualtricsdat, by = c("prolific_id" = "Q1")) %>%
+  filter(!is.na(prolific_id))
+
+# Plot distribution of ideology scores
+data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
+
+# # Tabulate attention checks
+# attention_merged <- data_merged %>%
+#   select(prolific_id, Q13_1, Q13_2, Q13_3) %>%
+#   mutate(attention_combination = paste(Q13_1, Q13_2, Q13_3, sep = " ")) %>%
+#   distinct(.keep_all = T)
+# 
+# attention_tabulation <- attention_merged %>%
+#   count(attention_combination) %>%
+#   arrange(desc(n))
+
+# List of numeric variables to standardize
+variables_to_standardize <- c("ideo_numeric", "polint", "age", "education", "income", "smuse", "endorsement")
+
+# Recode and standardize relevant variables
+data_standardized <- data_merged %>%
+  mutate(binary_tweet = ifelse(classification %in% c("Very left", "Somewhat left"), 0, 1),
+         polint = case_when(
+           Q14_1 == "0 (Not at all interested)" ~ 0,
+           Q14_1 == "1" ~ 1,
+           Q14_1 == "2" ~ 2,
+           Q14_1 == "3" ~ 3,
+           Q14_1 == "4" ~ 4,
+           Q14_1 == "5 (Very interested)" ~ 5,
+           TRUE ~ NA_real_
+         ),
+         gender = ifelse(Q9 == "Prefer not to say", NA, as.numeric(factor(Q9))),
+         age = as.numeric(Q8),
+         education = case_when(
+           Q10 == "20+" ~ 20,
+           Q10 == "15 or under" ~ 15,
+           Q10 == "19" ~ 19,
+           Q10 == "17-18" ~ 18,
+           Q10 == "16" ~ 16,
+           Q10 == "Can't remember" ~ NA_real_,
+           Q10 == "Still at school/Full time student" ~ as.numeric(age),
+           TRUE ~ NA_real_
+         ),
+         income = case_when(
+           Q11 == "Less than £5,000" ~ 1,
+           Q11 == "£5,000–£9,999" ~ 2,
+           Q11 == "£10,000–£14,999" ~ 3,
+           Q11 == "£15,000–£19,999" ~ 4,
+           Q11 == "£20,000–£24,999" ~ 5,
+           Q11 == "£25,000–£29,999" ~ 6,
+           Q11 == "£30,000–£34,999" ~ 7,
+           Q11 == "£35,000–£39,999" ~ 8,
+           Q11 == "£40,000–£44,999" ~ 9,
+           Q11 == "£45,000–£49,999" ~ 10,
+           Q11 == "£50,000–£59,999" ~ 11,
+           Q11 == "£60,000–£69,999" ~ 12,
+           Q11 == "£70,000–£99,999" ~ 13,
+           Q11 == "£100,000–£149,999" ~ 14,
+           Q11 == "Prefer not to say" ~ NA_real_
+         ),
+         smuse = sapply(strsplit(Q7, ","), length),
+         endorsement = endorsement
+  )
+
+# Standardize the data
+data_standardized <- data_standardized %>% mutate(across(all_of(variables_to_standardize), scale))
+
+# Filter the data for "like_click"
+data_like_click <- data_standardized %>% filter(event_type == "like_click")
+
+# Run the logistic regression
+model_like_click <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                        data = data_like_click, 
+                        family = binomial)
+
+# Display the summary of the model
+summary_like_click <- summary(model_like_click)
+print(summary_like_click)
+
+# Filter the data for "retweet_click"
+data_retweet_click <- data_standardized %>% filter(event_type == "retweet_click")
+
+# Run the logistic regression
+model_retweet_click <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                           data = data_retweet_click, 
+                           family = binomial)
+
+# Display the summary of the model
+summary_retweet_click <- summary(model_retweet_click)
+print(summary_retweet_click)
+
+# Filter the data for "expand_tweet"
+data_expand_tweet <- data_standardized %>% filter(event_type == "expand_tweet")
+
+# Run the logistic regression
+model_expand_tweet <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                          data = data_expand_tweet, 
+                          family = binomial)
+
+# Display the summary of the model
+summary_expand_tweet <- summary(model_expand_tweet)
+print(summary_expand_tweet)
+
+# Extract coefficients for all models
+coef_like_click <- tidy(model_like_click) %>% mutate(event_type = "like_click")
+coef_retweet_click <- tidy(model_retweet_click) %>% mutate(event_type = "retweet_click")
+coef_expand_tweet <- tidy(model_expand_tweet) %>% mutate(event_type = "expand_tweet")
+
+# Combine the coefficients into one data frame
+coef_data_combined <- bind_rows(coef_like_click, coef_retweet_click, coef_expand_tweet)
+
+# Plotting all coefficients with error bars for each event type
+ggplot(coef_data_combined, aes(x = term, y = estimate, ymin = estimate - std.error, ymax = estimate + std.error, color = event_type)) +
+  geom_pointrange(position = position_dodge(width = 0.5)) +
+  theme_minimal() +
+  labs(title = "",
+       x = "Variables",
+       y = "Coefficient Estimate (with 95% CI)") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none") +
+  facet_wrap(~ event_type, scales = "free_x")

@@ -1,0 +1,185 @@
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(broom)
+options(scipen = 999)
+
+# Read in data
+qualtricsdat <- read_csv("data/main/qualtrics.csv")
+qualtricsdat <- qualtricsdat[-c(1:2),]
+posthogdat <- read_csv("data/main/posthog.csv")
+tweetsdat <- read_csv("data/main/tweets.csv") %>%
+  select(id, classification, retweets_count, likes_count)
+
+tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
+
+# Extract relevant information from posthogdat
+posthogdat_filtered <- posthogdat %>%
+  select(session_id = `*.properties.$session_id`,
+         prolific_id = `*.properties.PROLIFIC_PID`,
+         tweet_id = `*.properties.properties.tweet_id`,
+         event_type = `*.event`) # Add the event type column
+
+# Fill in where cell doesn't contain prolific ID
+posthogdat_filtered <- posthogdat_filtered %>%
+  group_by(session_id) %>%
+  mutate(prolific_id = ifelse(is.na(prolific_id), first(na.omit(prolific_id)), prolific_id)) %>%
+  ungroup()
+
+# Merge in tweets and qualtrics data
+data_merged <- posthogdat_filtered %>%
+  left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
+  filter(!is.na(classification)) %>%
+  left_join(qualtricsdat, by = c("prolific_id" = "Q1")) %>%
+  filter(!is.na(prolific_id))
+
+# Plot distribution of ideology scores
+data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
+
+# # Tabulate attention checks
+# attention_merged <- data_merged %>%
+#   select(prolific_id, Q13_1, Q13_2, Q13_3) %>%
+#   mutate(attention_combination = paste(Q13_1, Q13_2, Q13_3, sep = " ")) %>%
+#   distinct(.keep_all = T)
+# 
+# attention_tabulation <- attention_merged %>%
+#   count(attention_combination) %>%
+#   arrange(desc(n))
+
+# List of numeric variables to standardize
+variables_to_standardize <- c("ideo_numeric", "polint", "age", "education", "income", "smuse", "endorsement")
+
+# Recode and standardize relevant variables
+data_standardized <- data_merged %>%
+  mutate(binary_tweet = ifelse(classification %in% c("Very left", "Somewhat left"), 0, 1),
+         polint = case_when(
+           Q14_1 == "0 (Not at all interested)" ~ 0,
+           Q14_1 == "1" ~ 1,
+           Q14_1 == "2" ~ 2,
+           Q14_1 == "3" ~ 3,
+           Q14_1 == "4" ~ 4,
+           Q14_1 == "5 (Very interested)" ~ 5,
+           TRUE ~ NA_real_
+         ),
+         gender = ifelse(Q9 == "Prefer not to say", NA, as.numeric(factor(Q9))),
+         age = as.numeric(Q8),
+         education = case_when(
+           Q10 == "20+" ~ 20,
+           Q10 == "15 or under" ~ 15,
+           Q10 == "19" ~ 19,
+           Q10 == "17-18" ~ 18,
+           Q10 == "16" ~ 16,
+           Q10 == "Can't remember" ~ NA_real_,
+           Q10 == "Still at school/Full time student" ~ as.numeric(age),
+           TRUE ~ NA_real_
+         ),
+         income = case_when(
+           Q11 == "Less than £5,000" ~ 1,
+           Q11 == "£5,000–£9,999" ~ 2,
+           Q11 == "£10,000–£14,999" ~ 3,
+           Q11 == "£15,000–£19,999" ~ 4,
+           Q11 == "£20,000–£24,999" ~ 5,
+           Q11 == "£25,000–£29,999" ~ 6,
+           Q11 == "£30,000–£34,999" ~ 7,
+           Q11 == "£35,000–£39,999" ~ 8,
+           Q11 == "£40,000–£44,999" ~ 9,
+           Q11 == "£45,000–£49,999" ~ 10,
+           Q11 == "£50,000–£59,999" ~ 11,
+           Q11 == "£60,000–£69,999" ~ 12,
+           Q11 == "£70,000–£99,999" ~ 13,
+           Q11 == "£100,000–£149,999" ~ 14,
+           Q11 == "Prefer not to say" ~ NA_real_
+         ),
+         smuse = sapply(strsplit(Q7, ","), length),
+         endorsement = endorsement
+  )
+
+# Standardize the data
+data_standardized <- data_standardized %>% mutate(across(all_of(variables_to_standardize), scale))
+
+# Filter the data for "like_click"
+data_like_click <- data_standardized %>% filter(event_type == "like_click")
+
+# Run the logistic regression
+model_like_click <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                        data = data_like_click, 
+                        family = binomial)
+
+# Display the summary of the model
+summary_like_click <- summary(model_like_click)
+print(summary_like_click)
+
+# Filter the data for "retweet_click"
+data_retweet_click <- data_standardized %>% filter(event_type == "retweet_click")
+
+# Run the logistic regression
+model_retweet_click <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                           data = data_retweet_click, 
+                           family = binomial)
+
+# Display the summary of the model
+summary_retweet_click <- summary(model_retweet_click)
+print(summary_retweet_click)
+
+# Filter the data for "expand_tweet"
+data_expand_tweet <- data_standardized %>% filter(event_type == "expand_tweet")
+
+# Run the logistic regression
+model_expand_tweet <- glm(binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement, 
+                          data = data_expand_tweet, 
+                          family = binomial)
+
+# Display the summary of the model
+summary_expand_tweet <- summary(model_expand_tweet)
+print(summary_expand_tweet)
+
+# Extract coefficients for all models
+coef_like_click <- tidy(model_like_click) %>% mutate(event_type = "like_click")
+coef_retweet_click <- tidy(model_retweet_click) %>% mutate(event_type = "retweet_click")
+coef_expand_tweet <- tidy(model_expand_tweet) %>% mutate(event_type = "expand_tweet")
+
+# Combine the coefficients into one data frame
+coef_data_combined <- bind_rows(coef_like_click, coef_retweet_click, coef_expand_tweet)
+
+# Remove the intercept and rename the variables
+coef_data_combined <- coef_data_combined %>%
+  filter(term != "(Intercept)") %>%
+  mutate(term = recode(term,
+                       "age" = "Age",
+                       "education" = "Education",
+                       "endorsement" = "Endorsement",
+                       "gender" = "Gender",
+                       "ideo_numeric" = "Ideology",
+                       "income" = "Income",
+                       "polint" = "Political Interest",
+                       "smuse" = "Social Media Use"))
+
+# Reorder the variables so ideology is first and others are in alphabetical order
+coef_data_combined$term <- factor(coef_data_combined$term, 
+                                  levels = c("Ideology", 
+                                             "Age", 
+                                             "Education", 
+                                             "Endorsement", 
+                                             "Gender", 
+                                             "Income", 
+                                             "Political Interest", 
+                                             "Social Media Use"))
+
+# Create the plot
+ggplot(coef_data_combined, aes(x = term, y = estimate, ymin = estimate - std.error, ymax = estimate + std.error, color = event_type)) +
+  geom_pointrange(position = position_dodge(width = 0.5), size = 0.8) +
+  coord_flip() +
+  theme_minimal(base_size = 14) +
+  labs(title = "",
+       x = "",
+       y = "Coefficient Estimate (with 95% CI)",
+       color = "Event Type") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 0.7) +
+  scale_color_brewer(palette = "Dark2") +  
+  theme(axis.text.y = element_text(size = 12),
+        axis.title.y = element_blank(),  
+        legend.position = "bottom",  
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),  
+        panel.grid.major = element_line(color = "grey90"),  
+        panel.grid.minor = element_blank()) 

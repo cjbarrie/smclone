@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 # Parameters
 sample_size = 10000000000000  # Number of random samples to read
-json_file_path = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/2024-06-12__user_timeline__uk-political-candidates.json"
+json_file_path = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/2024-06-12__user_timeline__uk-political-candidates.json"
 
 # First, count the total number of lines in the file
 total_lines = sum(1 for _ in open(json_file_path, 'r'))
@@ -64,4 +64,4 @@ tweets_filtered = tweets_filtered[(tweets_filtered['created_at'] < pd.Timestamp(
 tweets_filtered ['created_at'] = tweets_filtered ['created_at'].dt.strftime('%d-%m-%Y')
 
 # Save the filtered DataFrame to a new CSV file
-tweets_filtered.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_sample_filtered_pre-election_ALL.csv", index=False)
+tweets_filtered.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/tweets_sample_filtered_pre-election_ALL.csv", index=False)

@@ -22,13 +22,13 @@ output_variables_tweets = {
 }
 
 # # Load the first dataset
-tweets_pre_election = pd.read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_sample_filtered_pre-election.csv")
+tweets_pre_election = pd.read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/tweets_sample_filtered_pre-election.csv")
 
 # # Sample 10 rows
 # tweets_pre_election_sample = tweets_pre_election.sample(n=10, random_state=1)
 
 text_column = 'text'  # The name of the column in the DataFrame containing the content to classify
-output_csv_pre_election = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_sample_filtered_classified_pre-election.csv"
+output_csv_pre_election = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/tweets_sample_filtered_classified_pre-election.csv"
 
 # Process the subsample
 processed_dfsamp_static = process_dataset(
@@ -42,13 +42,13 @@ processed_dfsamp_static = process_dataset(
 )
 
 # Load the second dataset
-tweets_election = pd.read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_sample_filtered_election.csv", low_memory=False)
+tweets_election = pd.read_csv("/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/tweets_sample_filtered_election.csv", low_memory=False)
 
 # # Sample 10 rows
 # tweets_election_sample = tweets_election.sample(n=10, random_state=1)
 
 text_column = 'full_text'  # The name of the column in the DataFrame containing the content to classify
-output_csv_election = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/tweets_sample_filtered_classified_election.csv"
+output_csv_election = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/tweets_sample_filtered_classified_election.csv"
 
 # Process the subsample
 processed_dfsamp_static = process_dataset(

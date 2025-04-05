@@ -2,7 +2,7 @@ library(dplyr)
 library(readr)
 
 # Read the CSV file
-tweetselec <- read_csv("data/tweets_sample_filtered_classified_election.csv")
+tweetselec <- read_csv("data/uk/tweets_sample_filtered_classified_election.csv")
 
 # Filter the tweets
 tweetseleclr <- tweetselec %>%
@@ -13,7 +13,7 @@ write_csv(tweetseleclr, "data/election_timeline.csv")
 
 
 # Read the CSV file
-tweetsprelec <- read_csv("data/tweets_sample_filtered_classified_pre-election.csv")
+tweetsprelec <- read_csv("data/uk/tweets_sample_filtered_classified_pre-election.csv")
 
 # Filter the tweets
 tweetspreleclr <- tweetsprelec %>%
@@ -22,13 +22,5 @@ tweetspreleclr <- tweetsprelec %>%
 
 write_csv(tweetspreleclr, "data/pre-election_timeline.csv")
 
+################MANUAL CODING saved as tweets_pre-elec_manual.csv################ 
 
-
-# 
-# datfull <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/ukgetweets/data/processed/mptweets_all.csv")
-# 
-# candidates <- read_csv("/Users/cbarrie6/Dropbox/nyu_projects/ukgetweets/data/raw/candidates_all_final.csv")
-# 
-# datfull %>%
-#   distinct(screen_name) %>%
-#   count()

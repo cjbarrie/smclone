@@ -3,7 +3,7 @@ import json
 from tqdm import tqdm
 
 # Parameters
-json_file_path = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/2024-06-12__user_timeline__uk-political-candidates.json"
+json_file_path = "/Users/cbarrie6/Dropbox/nyu_projects/smclone/classification/data/uk/2024-06-12__user_timeline__uk-political-candidates.json"
 chunk_size = 100000  # Number of lines to read at a time
 
 # Define the columns you want to keep
@@ -65,4 +65,4 @@ tweets = tweets[(tweets['created_at'] < pd.Timestamp('2024-05-22')) &
 tweets['created_at'] = tweets['created_at'].dt.strftime('%d-%m-%Y')
 
 # Save the filtered DataFrame to a new CSV file
-tweets.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smcloneold/classification/data/tweets_pre-election_ALL.csv", index=False)
+tweets.to_csv("/Users/cbarrie6/Dropbox/nyu_projects/smcloneold/classification/data/uk/tweets_pre-election_ALL.csv", index=False)

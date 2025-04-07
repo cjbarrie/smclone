@@ -1,5 +1,5 @@
 from config import pd, openai, datetime, os, json, client
-
+import concurrent.futures
 def classify_content(content, output_variables, function_description, function_name):
     function = {
         "name": function_name,
@@ -12,7 +12,7 @@ def classify_content(content, output_variables, function_description, function_n
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": message_content}],
             functions=[function],
             max_tokens=1000
@@ -44,23 +44,34 @@ def process_dataset(dfsamp, classify_function, output_variables, function_descri
         print("No data to process.")
         return
 
-    # Ensure new columns for output exist in DataFrame
+    # Ensure new columns for output exist in the DataFrame
     for key in output_variables['properties'].keys():
         if key + '_gpt' not in dfsamp.columns:
             dfsamp[key + '_gpt'] = pd.NA
 
     total_rows = len(dfsamp)
-    for index, row in dfsamp.iterrows():
-        print(f"Processing {index + 1}/{total_rows}...")
+
+    # Helper function to process one row
+    def process_row(index, row):
         content = row[text_column]
         result = classify_function(content, output_variables, function_description, function_name)
+        return index, result
 
-        # Assuming result is a dictionary with the keys matching output_variables 'properties' keys
-        for key in output_variables['properties'].keys():
-            dfsamp.at[index, key + '_gpt'] = result.get(key, pd.NA)
-
-        # Save the DataFrame to a CSV file after each classification
-        dfsamp.to_csv(output_csv, index=False)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        # Submit all rows for processing concurrently
+        future_to_index = {executor.submit(process_row, index, row): index for index, row in dfsamp.iterrows()}
+        
+        for i, future in enumerate(concurrent.futures.as_completed(future_to_index), start=1):
+            try:
+                index, result = future.result()
+                # Update DataFrame with the classification result
+                for key in output_variables['properties'].keys():
+                    dfsamp.at[index, key + '_gpt'] = result.get(key, pd.NA)
+                # Save the DataFrame to CSV immediately after updating each row
+                dfsamp.to_csv(output_csv, index=False)
+                print(f"Completed row {i}/{total_rows} (CSV updated)")
+            except Exception as exc:
+                print(f"Row processing generated an exception: {exc}")
 
     print("\nProcessing complete.")
     return dfsamp

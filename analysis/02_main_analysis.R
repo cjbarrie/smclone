@@ -201,8 +201,7 @@ ggplot(
     color = "red",
     size = 0.7
   ) +
-  scale_color_brewer(palette = "Dark2",
-                     labels = c("Read more", "Like", "Share")) +
+  scale_color_brewer(palette = "Dark2") +
   theme(
     axis.text.y = element_text(size = 12),
     axis.title.y = element_blank(),
@@ -330,8 +329,7 @@ ggplot(
     color = "red",
     size = 0.7
   ) +
-  scale_color_brewer(palette = "Dark2",
-                     labels = c("Read more", "Like", "Share")) +
+  scale_color_brewer(palette = "Dark2") +
   theme(
     axis.text.y = element_text(size = 12),
     axis.title.y = element_blank(),

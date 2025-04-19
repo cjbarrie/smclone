@@ -3,7 +3,7 @@ library(dplyr)
 library(readr)
 
 # Step 1: Read in the data
-posthogdat <- read_csv("data/main/export.csv")
+posthogdat <- read_csv("data/UK/main/export.csv")
 
 # Step 2: Filter and retain only the relevant columns and rows for August 28, 2024
 posthogdat_filtered <- posthogdat %>%
@@ -24,7 +24,7 @@ posthogdat_filtered <- posthogdat_filtered %>%
   ungroup()
 
 # Step 4: Save the cleaned dataset
-write_csv(posthogdat_filtered, "data/main/posthog.csv")
+write_csv(posthogdat_filtered, "data/UK/main/posthog.csv")
 
 # # Remove the original data file as too large
 # file.remove("data/main/export.csv")

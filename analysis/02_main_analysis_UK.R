@@ -7,10 +7,10 @@ options(scipen = 999)
 # --------------------------
 # Read in data
 # --------------------------
-qualtricsdat <- read_csv("data/main/qualtrics.csv")
+qualtricsdat <- read_csv("data/UK/main/qualtrics.csv")
 qualtricsdat <- qualtricsdat[-c(1:2), ]
-posthogdat_filtered <- read_csv("data/main/posthog.csv")
-tweetsdat <- read_csv("data/main/tweets.csv") %>%
+posthogdat_filtered <- read_csv("data/UK/main/posthog.csv")
+tweetsdat <- read_csv("data/UK/main/tweets.csv") %>%
   select(id, classification, retweets_count, likes_count)
 tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
 

@@ -12,13 +12,16 @@ app = Flask(__name__,
     static_folder ='../frontend/build')
 CORS(app)
 
-absolute_path = os.path.abspath("tweets.csv")
+#absolute_path = os.path.abspath("tweets.csv")
+absolute_path = os.path.abspath("usa_feed.csv")
 
 
 import os
 
 # Get the absolute path to the CSV file relative to the current file's directory
-tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tweets.csv'))
+#tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tweets.csv'))
+tweets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usa_feed.csv'))
+
 
 
 frontend_path = os.path.abspath('frontend/build')
@@ -60,13 +63,13 @@ def get_tweets():
         next(reader, None)  # skip the header row
         for tweet in reader:
             tweets.append({
-                "id": tweet[1],
-                "user_id": tweet[2],
-                "username": tweet[5],
-                "name": tweet[6],
-                "tweet": tweet[8],
-                "retweets_count": tweet[13],  # Convert retweets count to integer,
-                "likes_count":tweet[14],     # Convert likes count to integer
+                "id": tweet[0],
+                "user_id": tweet[3],
+                "username": tweet[4],
+                "name": tweet[8],
+                "tweet": tweet[3],
+                "retweets_count": tweet[9],  # Convert retweets count to integer,
+                "likes_count":tweet[10],     # Convert likes count to integer
                 "profile_image_url": tweet[7]
             })
 

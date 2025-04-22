@@ -10,18 +10,37 @@ options(scipen = 999)
 qualtricsdat <- read_csv("data/US/test/qualtrics.csv")
 qualtricsdat <- qualtricsdat[-c(1:2), ]
 posthogdat_filtered <- read_csv("data/US/test/posthog.csv")
+
+# Read tweets and generate placeholder like/retweet counts
 tweetsdat <- read_csv("data/US/test/tweets.csv") %>%
-  select(id, classification, retweets_count, likes_count)
-tweetsdat$endorsement <- tweetsdat$retweets_count + tweetsdat$likes_count
+  select(id, classification, rt_rand, like_rand) %>%
+  rename(
+    retweets_count = rt_rand,
+    likes_count    = like_rand
+  ) %>%
+  mutate(endorsement = retweets_count + likes_count)
+
+# # --------------------------
+# # RANDOM PLACEHOLDER GENERATION
+# # --------------------------
+# set.seed(123)  # for reproducibility
+# tweetsdat <- tweetsdat %>%
+#   mutate(
+#     retweets_count = rpois(n(), lambda = 50),
+#     likes_count    = rpois(n(), lambda = 100),
+#     endorsement    = retweets_count + likes_count
+#   )
+# TODO: Replace the random generation above with actual retweets_count and likes_count
+#       (e.g., uncomment real data import below)
 
 # --------------------------
 # Merge in tweets and qualtrics data
 # --------------------------
 data_merged <- posthogdat_filtered %>%
   left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
-  filter(!is.na(classification)) %>%
-  left_join(qualtricsdat, by = c("prolific_id" = "Q1")) %>%
-  filter(!is.na(prolific_id))
+  # filter(!is.na(classification)) %>%
+  left_join(qualtricsdat, by = c("respondent_id" = "Q16")) %>%
+  filter(!is.na(respondent_id))
 
 # Plot distribution of ideology scores
 data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
@@ -30,7 +49,7 @@ data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)
 # Tabulate attention checks
 # --------------------------
 attention_merged <- data_merged %>%
-  select(prolific_id, Q13_1, Q13_2, Q13_3) %>%
+  select(respondent_id, Q13_1, Q13_2, Q13_3) %>%
   mutate(attention_combination = paste(Q13_1, Q13_2, Q13_3, sep = " ")) %>%
   distinct(.keep_all = TRUE)
 
@@ -45,7 +64,6 @@ variables_to_standardize <- c("ideo_numeric",
                               "polint",
                               "age",
                               "education",
-                              "income",
                               "smuse",
                               "endorsement")
 
@@ -73,23 +91,6 @@ data_standardized <- data_merged %>%
       Q10 == "Still at school/Full time student" ~ as.numeric(age),
       TRUE ~ NA_real_
     ),
-    income = case_when(
-      Q11 == "Less than £5,000" ~ 1,
-      Q11 == "£5,000–£9,999" ~ 2,
-      Q11 == "£10,000–£14,999" ~ 3,
-      Q11 == "£15,000–£19,999" ~ 4,
-      Q11 == "£20,000–£24,999" ~ 5,
-      Q11 == "£25,000–£29,999" ~ 6,
-      Q11 == "£30,000–£34,999" ~ 7,
-      Q11 == "£35,000–£39,999" ~ 8,
-      Q11 == "£40,000–£44,999" ~ 9,
-      Q11 == "£45,000–£49,999" ~ 10,
-      Q11 == "£50,000–£59,999" ~ 11,
-      Q11 == "£60,000–£69,999" ~ 12,
-      Q11 == "£70,000–£99,999" ~ 13,
-      Q11 == "£100,000–£149,999" ~ 14,
-      Q11 == "Prefer not to say" ~ NA_real_
-    ),
     smuse = sapply(strsplit(Q7, ","), length),
     endorsement = endorsement
   )
@@ -103,7 +104,7 @@ data_standardized <- data_standardized %>% mutate(across(all_of(variables_to_sta
 # For "like_click"
 data_like_click <- data_standardized %>% filter(event_type == "like_click")
 model_like_click <- glm(
-  binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+  binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
   data = data_like_click,
   family = binomial
 )
@@ -113,7 +114,7 @@ print(summary_like_click)
 # For "retweet_click"
 data_retweet_click <- data_standardized %>% filter(event_type == "retweet_click")
 model_retweet_click <- glm(
-  binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+  binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
   data = data_retweet_click,
   family = binomial
 )
@@ -123,7 +124,7 @@ print(summary_retweet_click)
 # For "expand_tweet"
 data_expand_tweet <- data_standardized %>% filter(event_type == "expand_tweet")
 model_expand_tweet <- glm(
-  binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+  binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
   data = data_expand_tweet,
   family = binomial
 )
@@ -147,7 +148,6 @@ coef_data_combined <- coef_data_combined %>%
       "endorsement" = "Endorsement",
       "gender" = "Gender",
       "ideo_numeric" = "Ideology",
-      "income" = "Income",
       "polint" = "Political Interest",
       "smuse" = "Social Media Use"
     )
@@ -160,7 +160,6 @@ coef_data_combined$term <- factor(
     "Education",
     "Endorsement",
     "Gender",
-    "Income",
     "Political Interest",
     "Social Media Use"
   )
@@ -216,12 +215,12 @@ if (!dir.exists("plots")) {
 }
 
 
-ggsave(
-  filename = "plots/coefplot.png",
-  width = 10,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "plots/coefplot.png",
+#   width = 10,
+#   height = 6,
+#   dpi = 300
+# )
 
 # --------------------------
 # Define helper function for analysis to avoid duplication
@@ -230,21 +229,21 @@ run_analysis <- function(data) {
   # For "like_click"
   data_like_click <- data %>% filter(event_type == "like_click")
   model_like_click <- glm(
-    binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+    binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
     data = data_like_click,
     family = binomial
   )
   # For "retweet_click"
   data_retweet_click <- data %>% filter(event_type == "retweet_click")
   model_retweet_click <- glm(
-    binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+    binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
     data = data_retweet_click,
     family = binomial
   )
   # For "expand_tweet"
   data_expand_tweet <- data %>% filter(event_type == "expand_tweet")
   model_expand_tweet <- glm(
-    binary_tweet ~ ideo_numeric + polint + gender + age + income + smuse + education + endorsement,
+    binary_tweet ~ ideo_numeric + polint + gender + age + smuse + education + endorsement,
     data = data_expand_tweet,
     family = binomial
   )
@@ -264,7 +263,6 @@ run_analysis <- function(data) {
         "endorsement" = "Endorsement",
         "gender" = "Gender",
         "ideo_numeric" = "Ideology",
-        "income" = "Income",
         "polint" = "Political Interest",
         "smuse" = "Social Media Use"
       )
@@ -278,7 +276,6 @@ run_analysis <- function(data) {
       "Education",
       "Endorsement",
       "Gender",
-      "Income",
       "Political Interest",
       "Social Media Use"
     )
@@ -344,9 +341,9 @@ if (!dir.exists("plots")) {
   dir.create("plots")
 }
 
-ggsave(
-  filename = "plots/coefplot_attention.png",
-  width = 10,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "plots/coefplot_attention.png",
+#   width = 10,
+#   height = 6,
+#   dpi = 300
+# )

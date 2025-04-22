@@ -5,6 +5,7 @@ from flask_cors import CORS
 import numpy as np
 import os  
 import random
+import html
 
 
 app = Flask(__name__,
@@ -66,8 +67,8 @@ def get_tweets():
                 "id": tweet[0],
                 "user_id": tweet[3],
                 "username": tweet[4],
-                "name": tweet[8],
-                "tweet": tweet[3],
+                "name": html.unescape(tweet[8]),
+                "tweet": html.unescape(tweet[3]),
                 "retweets_count": tweet[9],  # Convert retweets count to integer,
                 "likes_count":tweet[10],     # Convert likes count to integer
                 "profile_image_url": tweet[7]

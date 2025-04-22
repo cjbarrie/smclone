@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // Ensure both hooks are imported here
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Timeline.css";
 import posthog from "posthog-js";
 
-
 const Timeline = () => {
-
   const location = useLocation();
-  const navigate = useNavigate(); // Initialize useNavigate hook here within the component
+  const navigate = useNavigate();
   const userId = location.state?.userId;
 
   const [tweets, setTweets] = useState([]);
   const [likedTweets, setLikedTweets] = useState(new Set());
   const [retweetedTweets, setRetweetedTweets] = useState(new Set());
   const [expandedTweets, setExpandedTweets] = useState(new Set());
-  const [countdown, setCountdown] = useState(120); // Initialize countdown to 120 seconds for 2 minutes
+  const [countdown, setCountdown] = useState(120);
   const tweetCutOffLength = 100;
- 
+
+  // ✅ HTML entity decoding helper
+  const decodeHtml = (html) => {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  };
 
   useEffect(() => {
     axios
@@ -27,24 +31,22 @@ const Timeline = () => {
       })
       .catch((error) => {
         console.error('Error fetching tweets:', error);
-      }, []);
-
+      });
 
     const timer = setInterval(() => {
       setCountdown((currentCountdown) => {
         if (currentCountdown <= 1) {
           clearInterval(timer);
-          navigate("/end"); // Use navigate to redirect after countdown ends
+          navigate("/end");
           return 0;
         }
         return currentCountdown - 1;
       });
-    }, 1000); // Update countdown every second
+    }, 1000);
 
-    return () => clearInterval(timer); // Clean up the interval on component unmount
-  // }, [navigate]); 
-   }, []); 
-  
+    return () => clearInterval(timer);
+  }, []);
+
   const handleLikeClick = (tweetId, event) => {
     event.stopPropagation();
     toggleLike(tweetId);
@@ -59,7 +61,7 @@ const Timeline = () => {
 
   const handleExpandClick = (tweetId, event) => {
     event.stopPropagation();
-    if(!expandedTweets.has(tweetId)) {
+    if (!expandedTweets.has(tweetId)) {
       handleInteraction('expand_tweet', tweetId, userId);
     }
     toggleExpandTweet(tweetId);
@@ -92,8 +94,8 @@ const Timeline = () => {
   const handleInteraction = (interaction, tweetId, userId) => {
     posthog.capture(interaction, {
       properties: {
-        tweet_id: tweetId, 
-        userId: userId // Standardized property name
+        tweet_id: tweetId,
+        userId: userId
       }
     });
     console.log(`sent ${interaction} data to posthog for user ${userId}`)
@@ -119,14 +121,17 @@ const Timeline = () => {
           <img className="Tweet-avatar" src={tweet.profile_image_url} alt="Avatar" />
           <div className="Tweet-content">
             <div className="Tweet-header">
-              <span className="Tweet-name">{tweet.name}</span>
+              <span className="Tweet-name">{decodeHtml(tweet.name)}</span>
               <span className="Tweet-username">@{tweet.username}</span>
               <span className="Tweet-timestamp">{tweet.timestamp}</span>
             </div>
             <div className="Tweet-text">
               <span>
-                {tweet.tweet.length <= tweetCutOffLength ? tweet.tweet :
-                  expandedTweets.has(tweet.id) ? `${tweet.tweet} ` : `${tweet.tweet.slice(0, tweetCutOffLength)}... `}
+                {tweet.tweet.length <= tweetCutOffLength
+                  ? decodeHtml(tweet.tweet)
+                  : expandedTweets.has(tweet.id)
+                    ? decodeHtml(tweet.tweet)
+                    : decodeHtml(tweet.tweet.slice(0, tweetCutOffLength)) + "... "}
               </span>
               {tweet.tweet.length > tweetCutOffLength && (
                 <button className="Expand-button" onClick={(event) => handleExpandClick(tweet.id, event)}>
@@ -148,7 +153,7 @@ const Timeline = () => {
         </div>
       ))}
     </div>
-  );    
+  );
 };
 
 export default Timeline;

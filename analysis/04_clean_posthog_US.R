@@ -12,7 +12,7 @@ posthogdat_filtered <- posthogdat %>%
   select(
     session_id = `*.properties.$session_id`,
     # Select necessary columns
-    respondent_id = `*.properties.distinct_id`,
+    respondent_id = `*.properties.romId`,
     tweet_id = `*.properties.properties.tweet_id`,
     event_type = `*.event`
   )

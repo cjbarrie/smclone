@@ -39,7 +39,7 @@ tweetsdat <- read_csv("data/US/test/tweets.csv") %>%
 data_merged <- posthogdat_filtered %>%
   left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
   # filter(!is.na(classification)) %>%
-  left_join(qualtricsdat, by = c("respondent_id" = "Q16")) %>%
+  left_join(qualtricsdat, by = c("respondent_id" = "rom_id")) %>%
   filter(!is.na(respondent_id))
 
 # Plot distribution of ideology scores

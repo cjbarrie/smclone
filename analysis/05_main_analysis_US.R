@@ -40,7 +40,9 @@ data_merged <- posthogdat_filtered %>%
   left_join(tweetsdat, by = c("tweet_id" = "id")) %>%
   # filter(!is.na(classification)) %>%
   left_join(qualtricsdat, by = c("respondent_id" = "rom_id")) %>%
-  filter(!is.na(respondent_id))
+  filter(!is.na(respondent_id)) %>%
+  mutate(date = as.Date(StartDate)) %>%
+  filter(date >= "2025-04-25")
 
 # Plot distribution of ideology scores
 data_merged$ideo_numeric <- as.numeric(data_merged$Q2_1)

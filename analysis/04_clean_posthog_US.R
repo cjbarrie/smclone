@@ -28,3 +28,22 @@ write_csv(posthogdat_filtered, "data/US/test/posthog.csv")
 
 # # Remove the original data file as too large
 # file.remove("data/main/export.csv")
+
+
+# library(stringr)
+# 
+# # Search for either string in **any** column:
+# matches <- posthogdat %>%
+#   filter(
+#     if_any(
+#       everything(),
+#       ~ str_detect(as.character(.), "test")
+#     )
+#   )
+# 
+# # How many hits?
+# n_matches <- nrow(matches)
+# message("Found ", n_matches, " matching rows.")
+# 
+# # View the matches
+# print(matches)

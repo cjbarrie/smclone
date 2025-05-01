@@ -32,7 +32,7 @@ const Login = () => {
   };
   
   return submitted ? (
-    navigate("/timeline", { state: { userId: uuid } })
+    navigate("/instructions", { state: { userId: uuid } })
   ) : (
     <div className="Login">
       <div className="Login-box">
@@ -41,7 +41,7 @@ const Login = () => {
 
          <p className="adblock-message">You must disable your ad blocker to take part in this study. Submissions using an ad blocker will not be marked as complete.</p>
 
-  <p> You have been invited to take part in a research study to learn more about how people engage with content on different types of social media platforms.<b> You should interact with the platform just as you would any other social media platform that you might use.</b></p> 
+  <p> You have been invited to take part in a research study to learn more about how people engage with content on different types of social media platforms.</p> 
   <p> This study will be conducted by Alia ElKattan and Professor Christopher Barrie at New York University. </p> 
   <p> If you agree to be in this study, you will be asked to do the following:</p>
 

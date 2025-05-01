@@ -91,6 +91,8 @@ def extend_tweet(truncated: str, classification: str,
         f"Below is a truncated tweet, which may end mid-word. "
         f"First, complete the truncated word at the end, then extend the tweet by about {extra_chars} characters, "
         f"keeping its original political outlook.\n\n"
+        f"The resulting tweet should ALWAYS retain the initial text of the original tweet.\n\n"
+        f"You should also clean up any strange characters or formatting.\n\n"
         f"Political classification: {classification}\n"
         f"Truncated tweet: \"{truncated}\"\n\n"
         f"Extended tweet:"

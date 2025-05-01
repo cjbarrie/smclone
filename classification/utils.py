@@ -1,5 +1,7 @@
 from config import pd, openai, datetime, os, json, client
 import concurrent.futures
+import random
+import time
 def classify_content(content, output_variables, function_description, function_name):
     function = {
         "name": function_name,
@@ -74,4 +76,80 @@ def process_dataset(dfsamp, classify_function, output_variables, function_descri
                 print(f"Row processing generated an exception: {exc}")
 
     print("\nProcessing complete.")
+    return dfsamp
+
+
+def extend_tweet(truncated: str, classification: str,
+                 min_chars: int = 50, max_chars: int = 150,
+                 model: str = "gpt-4o-mini") -> str:
+    """
+    Call the OpenAI API to extend a truncated tweet by ~50–150 chars,
+    maintaining its original political outlook.
+    """
+    extra_chars = random.randint(min_chars, max_chars)
+    prompt = (
+        f"Below is a truncated tweet, which may end mid-word. "
+        f"First, complete the truncated word at the end, then extend the tweet by about {extra_chars} characters, "
+        f"keeping its original political outlook.\n\n"
+        f"Political classification: {classification}\n"
+        f"Truncated tweet: \"{truncated}\"\n\n"
+        f"Extended tweet:"
+    )
+
+    # retry on transient errors
+    for _ in range(3):
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                # rough token estimate
+                max_tokens=extra_chars // 4 + 50
+            )
+            # grab and trim
+            text = resp.choices[0].message.content.strip()
+
+            # if it’s wrapped in quotes, remove them
+            if (text.startswith('"') and text.endswith('"')) or \
+            (text.startswith("'") and text.endswith("'")):
+                text = text[1:-1]
+
+            return text.strip()
+        except Exception:
+            time.sleep(2)
+
+    # fallback
+    return truncated
+
+def process_extensions(dfsamp, text_column, classification_column,
+                       output_column, output_csv, max_workers=5):
+    """
+    Concurrently extend each row’s truncated tweet and write out to CSV as we go.
+    """
+    # make sure output column exists
+    if output_column not in dfsamp.columns:
+        dfsamp[output_column] = pd.NA
+
+    total = len(dfsamp)
+
+    def _worker(idx, row):
+        extended = extend_tweet(
+            row[text_column],
+            row[classification_column]
+        )
+        return idx, extended
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as exe:
+        futures = {
+            exe.submit(_worker, idx, row): idx
+            for idx, row in dfsamp.iterrows()
+        }
+        for i, fut in enumerate(concurrent.futures.as_completed(futures), start=1):
+            idx, ext = fut.result()
+            dfsamp.at[idx, output_column] = ext
+            # snapshot to disk
+            dfsamp.to_csv(output_csv, index=False)
+            print(f"Completed {i}/{total} — saved to CSV")
+
+    print("All done!")
     return dfsamp

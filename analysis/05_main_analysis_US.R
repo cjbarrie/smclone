@@ -2,6 +2,7 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 library(broom)
+library(tidylog)
 options(scipen = 999)
 
 # --------------------------
@@ -98,7 +99,7 @@ data_standardized <- data_merged %>%
   )
 
 # Standardize the data (convert each variable to a scaled numeric vector)
-data_standardized <- data_standardized %>% mutate(across(all_of(variables_to_standardize), scale))
+data_standardized <- data_standardized %>% mutate(across(all_of(variables_to_standardize), scale)) 
 
 # --------------------------
 # Full-sample analysis: Run logistic regressions for each event type
@@ -342,6 +343,22 @@ ggplot(
 if (!dir.exists("plots")) {
   dir.create("plots")
 }
+
+ggplot(coef_data_attention,
+       aes(x = term,
+           y = estimate,
+           ymin = estimate - std.error,
+           ymax = estimate + std.error)) +
+  geom_pointrange(size = 0.8) +
+  coord_flip() +
+  facet_wrap(~ event_type,
+             ncol = 1,
+             scales = "free") +        # <-- allows each panel its own y-axis
+  theme_minimal(base_size = 14) +
+  labs(x = NULL,
+       y = "Coefficient Estimate (95% CI)",
+       title = "Attention-Passing Respondents") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red")
 
 # ggsave(
 #   filename = "plots/coefplot_attention.png",

@@ -1,0 +1,24 @@
+\begin{table}
+\centering
+\caption{Joint FE Logit: Ideology X Right-aligned Post X Engagement Type}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}[t]{lcccc}
+\toprule
+  & Study 1 (UK) & Study 2 (US) & Study 3 (US) & Study 4 (US)\\
+\midrule
+Ideology X Right (Read more) & \num{0.076}** & \num{-0.063} & \num{0.097} & \num{0.204}\\
+ & (\num{0.024}) & (\num{0.097}) & (\num{0.085}) & (\num{0.125})\\
+Ideology X Right X Like (Delta vs. Read) & \num{0.487}*** & \num{0.374}* & \num{0.760}*** & \num{0.937}***\\
+ & (\num{0.057}) & (\num{0.177}) & (\num{0.183}) & (\num{0.134})\\
+Ideology X Right X Share (Delta vs. Read) & \num{0.525}*** & \num{0.069} & \num{0.596}* & \num{1.078}***\\
+ & (\num{0.069}) & (\num{0.213}) & (\num{0.285}) & (\num{0.198})\\
+\midrule
+Num.Obs. & \num{677100} & \num{151560} & \num{137520} & \num{84960}\\
+FE: id & X & X & X & X\\
+FE: tweet\_id & X & X & X & X\\
+\bottomrule
+\multicolumn{5}{l}{\rule{0pt}{1em}* p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\end{tabular}
+}
+\end{table}

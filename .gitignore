@@ -1,0 +1,19 @@
+00_junk/
+overleaf/
+archive/
+analysis/00_ARCHIVED/
+
+# Local/editor artifacts
+.DS_Store
+*.Rhistory
+.env
+*.env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Node dependencies and build artifacts
+node_modules/
+frontend/node_modules/
+frontend/build/

@@ -24,6 +24,7 @@ library(RColorBrewer)
 library(cowplot)
 library(metafor)
 library(purrr)
+library(scales)   # percent_format() used in the sensitivity plot below
 
 options(scipen = 999)
 set.seed(42)
@@ -795,10 +796,33 @@ sanitize_tex <- function(x) {
   x
 }
 
-# Helper: wrap tables to fit page width
+# Helper: wrap tables to fit page width + apply Sociological Science / ASA
+# table-preparation fixes (readable GOF labels; numbered estimate columns).
 wrap_table_for_page_fit <- function(tex_file) {
   if (!file.exists(tex_file)) return(invisible(NULL))
   lines <- readLines(tex_file, warn = FALSE)
+
+  # (0) Undo kableExtra escaping of LaTeX math in coefficient labels
+  #     (e.g. "\textbackslash{}(\textbackslash{}times\textbackslash{})" -> "\(\times\)").
+  lines <- gsub("\\\\textbackslash\\{\\}", "\\\\", lines)
+
+  # (0b) Journal rule: significance signifiers must be one character wide, so
+  #      render the p<0.01 marker as a dagger (\dag) rather than '**'.
+  lines <- gsub("\\*\\*", "\\\\dag", lines)
+
+  # (a) No software variable names in GOF rows.
+  lines <- gsub("Num.Obs.",      "Observations",  lines, fixed = TRUE)
+  lines <- gsub("FE: id",        "Respondent FE", lines, fixed = TRUE)
+  lines <- gsub("FE: tweet\\_id", "Tweet FE",     lines, fixed = TRUE)
+
+  # (b) Number the estimate columns (1)-(4) just below the study-name header.
+  hdr <- which(grepl("Study 1 \\(UK\\)", lines))
+  if (length(hdr)) {
+    num_row <- " & (1) & (2) & (3) & (4)\\\\"
+    lines <- append(lines, num_row, after = hdr[1])
+  }
+
+  # (c) Wrap tabular to page width.
   b <- which(grepl("\\\\begin\\{tabular\\}", lines))
   e <- which(grepl("\\\\end\\{tabular\\}",   lines))
   if (length(b) && length(e)) {
@@ -810,8 +834,8 @@ wrap_table_for_page_fit <- function(tex_file) {
       lines[(e[length(e)]+1):length(lines)]
     )
     lines <- gsub("@\\{\\\\extracolsep\\{5pt\\}\\}", "@{\\\\extracolsep{2pt}}", lines)
-    writeLines(lines, tex_file)
   }
+  writeLines(lines, tex_file)
   invisible(NULL)
 }
 
@@ -829,11 +853,11 @@ joint_models <- list(
 # Coefficient labels – no Unicode, use LaTeX math for × and plain "Delta"
 coef_map_joint <- c(
   "ideo_numeric:binary_tweet" =
-    "Ideology X Right (Read more)",
+    "Ideology \\(\\times\\) Right (Read more)",
   "ideo_numeric:binary_tweet:event_typelike" =
-    "Ideology X Right X Like (Delta vs. Read)",
+    "Ideology \\(\\times\\) Right \\(\\times\\) Like (Delta vs. Read)",
   "ideo_numeric:binary_tweet:event_typeshare" =
-    "Ideology X Right X Share (Delta vs. Read)"
+    "Ideology \\(\\times\\) Right \\(\\times\\) Share (Delta vs. Read)"
 )
 
 # Sanitize labels for TeX (in case anything weird slipped in)
@@ -851,8 +875,8 @@ msummary(
   # drop intercept and event_type main effects to keep table compact
   coef_omit = "^(Intercept)|^event_type",
   gof_map   = c("nobs", "FE: id", "FE: tweet_id"),
-  stars     = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
-  title     = sanitize_tex("Joint FE Logit: Ideology X Right-aligned Post X Engagement Type"),
+  stars     = c('*' = 0.05, '**' = 0.01),
+  title     = sanitize_tex("Joint FE Logit: Baseline Clicker-Restricted Assigned-Post Panel"),
   output    = tex_file
 )
 

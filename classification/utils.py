@@ -14,7 +14,7 @@ def classify_content(content, output_variables, function_description, function_n
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o-mini-2024-07-18",
             messages=[{"role": "user", "content": message_content}],
             functions=[function],
             max_tokens=1000
@@ -81,7 +81,7 @@ def process_dataset(dfsamp, classify_function, output_variables, function_descri
 
 def extend_tweet(truncated: str, classification: str,
                  min_chars: int = 50, max_chars: int = 150,
-                 model: str = "gpt-4o-mini") -> str:
+                 model: str = "gpt-4o-mini-2024-07-18") -> str:
     """
     Call the OpenAI API to extend a truncated tweet by ~50–150 chars,
     maintaining its original political outlook.

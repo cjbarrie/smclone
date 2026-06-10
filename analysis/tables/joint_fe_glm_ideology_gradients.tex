@@ -1,24 +1,25 @@
 \begin{table}
 \centering
-\caption{Joint FE Logit: Ideology X Right-aligned Post X Engagement Type}
+\caption{Joint FE Logit: Baseline Clicker-Restricted Assigned-Post Panel}
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tabular}[t]{lcccc}
 \toprule
   & Study 1 (UK) & Study 2 (US) & Study 3 (US) & Study 4 (US)\\
+ & (1) & (2) & (3) & (4)\\
 \midrule
-Ideology X Right (Read more) & \num{0.076}** & \num{-0.063} & \num{0.097} & \num{0.204}\\
+Ideology \(\times\) Right (Read more) & \num{0.076}\dag & \num{-0.063} & \num{0.097} & \num{0.204}\\
  & (\num{0.024}) & (\num{0.097}) & (\num{0.085}) & (\num{0.125})\\
-Ideology X Right X Like (Delta vs. Read) & \num{0.487}*** & \num{0.374}* & \num{0.760}*** & \num{0.937}***\\
+Ideology \(\times\) Right \(\times\) Like (Delta vs. Read) & \num{0.487}\dag & \num{0.374}* & \num{0.760}\dag & \num{0.937}\dag\\
  & (\num{0.057}) & (\num{0.177}) & (\num{0.183}) & (\num{0.134})\\
-Ideology X Right X Share (Delta vs. Read) & \num{0.525}*** & \num{0.069} & \num{0.596}* & \num{1.078}***\\
+Ideology \(\times\) Right \(\times\) Share (Delta vs. Read) & \num{0.525}\dag & \num{0.069} & \num{0.596}* & \num{1.078}\dag\\
  & (\num{0.069}) & (\num{0.213}) & (\num{0.285}) & (\num{0.198})\\
 \midrule
-Num.Obs. & \num{677100} & \num{151560} & \num{137520} & \num{84960}\\
-FE: id & X & X & X & X\\
-FE: tweet\_id & X & X & X & X\\
+Observations & \num{677100} & \num{151560} & \num{137520} & \num{84960}\\
+Respondent FE & X & X & X & X\\
+Tweet FE & X & X & X & X\\
 \bottomrule
-\multicolumn{5}{l}{\rule{0pt}{1em}* p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\multicolumn{5}{l}{\rule{0pt}{1em}* p $<$ 0.05, \dag p $<$ 0.01}\\
 \end{tabular}
 }
 \end{table}
